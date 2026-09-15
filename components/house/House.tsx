@@ -316,7 +316,7 @@ export function House() {
           </button>
         ) : null}
         <p className="t-label view-note" aria-live="polite">
-          {view === "drawing" ? "Every room is drawn from the house's own photographs." : "The games corner and the bowling alley have no clean photograph yet, so they stay drawn."}
+          {view === "drawing" ? "The rooms are drawn from the house's own photographs." : "The games corner and the bowling alley have no clean photograph yet, so they stay drawn."}
         </p>
       </div>
     </div>
