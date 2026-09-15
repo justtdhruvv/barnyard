@@ -33,7 +33,8 @@ export function flyToRoom(pane: SVGAElement, slug: string, push: (href: string) 
     [{ transform: "translate(0px, 0px) scale(1)" }, { transform: `translate(${tx}px, ${ty}px) scale(${s})` }],
     { duration: 800, easing: EASE_PEN, fill: "forwards" },
   );
-  inner?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 800, easing: EASE_PEN, fill: "forwards" });
+  // the vignette is gone before the scale thickens its lines
+  inner?.animate([{ opacity: 1 }, { opacity: 0, offset: 0.4 }, { opacity: 0 }], { duration: 800, easing: "linear", fill: "forwards" });
 
   let removed = false;
   const remove = () => { if (!removed) { removed = true; clone.remove(); } };
