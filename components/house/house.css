@@ -28,6 +28,30 @@ html[data-regime="night"] .house .vignette path.v-lamp { stroke: var(--lamp); }
 
 .house-wrap[data-arriving] .pane { pointer-events: none; }
 
+/* Drawing · Both · Photograph */
+.view-bar { display: grid; justify-items: center; gap: 8px; margin-top: 16px; text-align: center; }
+.view-toggle { display: inline-flex; padding: 3px; border: 1px solid var(--ink); border-radius: 26px; gap: 2px; }
+.view-option { min-height: 44px; min-width: 44px; padding: 0 16px; border: 0; border-radius: 22px; background: transparent; color: var(--ink); font-family: var(--font-display); font-weight: 500; font-size: 0.975rem; cursor: pointer; transition: background-color 400ms var(--ease-pen), color 400ms var(--ease-pen); -webkit-tap-highlight-color: transparent; }
+.view-option[aria-checked="true"] { background: var(--ink); color: var(--paper); }
+.view-option:active { transform: scale(0.97); }
+.view-note { max-width: 36ch; min-height: 2.6em; }
+
+.house .pane-photo { opacity: 0; transform: translateY(9%) scale(1.04); transform-box: fill-box; transform-origin: 50% 0; transition: opacity 800ms var(--ease-pen), transform 800ms var(--ease-pen); transition-delay: calc(var(--i, 0) * 80ms); }
+.house .pane-wash { fill: var(--paper); stroke: none; opacity: 0; transition: opacity 700ms var(--ease-pen); transition-delay: calc(var(--i, 0) * 80ms); }
+.house .vignette path.v { transition: opacity 700ms var(--ease-pen), stroke 700ms var(--ease-pen); transition-delay: calc(var(--i, 0) * 80ms); }
+.house-wrap[data-view="both"] .pane-photo, .house-wrap[data-view="photo"] .pane-photo { opacity: 1; transform: none; }
+.house-wrap[data-view="both"] .pane-wash { opacity: 0.4; }
+.house-wrap[data-view="both"] .house .vignette.has-photo path.v { stroke: var(--ink); stroke-width: 1px; }
+.house-wrap[data-view="photo"] .house .vignette.has-photo path.v { opacity: 0.1; }
+.house-wrap[data-view="photo"] .house .vignette.has-photo .glow { opacity: 0; }
+@media (prefers-reduced-motion: reduce) { .house .pane-photo { transform: none; transition-delay: 0ms; } }
+
+/* pressed pane */
+.house .pane { -webkit-tap-highlight-color: transparent; }
+.house .pane:active .pane-frame { stroke: var(--pen); stroke-width: 2px; }
+.house .pane:active .pane-label { fill: var(--pen); }
+.house .pane:active .vignette { opacity: 0.75; }
+
 /* the pane flying into its room */
 .flight { position: fixed; z-index: 60; background: var(--paper); transform-origin: 0 0; pointer-events: none; overflow: hidden; will-change: transform; }
 .flight-vignette { position: absolute; left: 3%; top: 14%; width: 94%; height: 83%; }

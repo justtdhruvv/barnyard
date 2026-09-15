@@ -6,6 +6,10 @@ import { OpenNow } from "@/components/light/OpenNow";
 import { addressLines, cafe, eventDate, fact, mapsHref, phoneHref, pressDate, whatsappHref, whatsappWith } from "@/lib/cafe";
 import { formatClock } from "@/lib/daylight";
 import { maybeDrawing } from "@/lib/maybe";
+import { Wipe } from "@/components/draw/Wipe";
+import type { Photo } from "@/components/draw/Sheet";
+import photos from "@/content/photos.json";
+import { metaFor } from "@/lib/drawings";
 import "@/components/home/home.css";
 
 const event = (slug: string) => cafe.events.find((e) => e.slug === slug)!;
@@ -106,7 +110,11 @@ export default function Home() {
       </section>
 
       <section id="visit" className="visit wrap" aria-labelledby="visit-title">
-        <div className="visit-drawing">{facade ? <Drawing drawing={facade} mode="view" /> : null}</div>
+        <div className="visit-drawing">
+          {facade && (photos as Record<string, Photo>).facade ? (
+            <Wipe drawing={facade} photo={(photos as Record<string, Photo>).facade} credit={metaFor("facade").credit} />
+          ) : facade ? <Drawing drawing={facade} mode="view" /> : null}
+        </div>
         <div className="visit-words">
           <h2 id="visit-title" className="t-head">Come and find the house</h2>
           <address className="t-body visit-address">

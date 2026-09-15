@@ -1,6 +1,12 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import photos from "@/content/photos.json";
+import { metaFor } from "@/lib/drawings";
+
+type View = "drawing" | "both" | "photo";
+const VIEWS: { v: View; label: string }[] = [{ v: "drawing", label: "Drawing" }, { v: "both", label: "Both" }, { v: "photo", label: "Photograph" }];
+const PANE_PHOTO = (id: string) => ((photos as Record<string, unknown>)[id] && metaFor(id).lift ? `/photos/pane/${id}.jpg` : null);
 import { DRAWINGS, drawingFor } from "@/drawings";
 import { markDrawing } from "@/drawings/mark";
 import type { Drawing } from "@/lib/draw/types";
@@ -25,7 +31,7 @@ function vignetteOf(slug: keyof typeof VIGNETTES, id: string): { d: Drawing | nu
   return { d, vb: v ? v.join(" ") : `${d.x ?? 0} ${d.y ?? 0} ${d.width} ${d.height}` };
 }
 
-function Variant({ g, variant, clockT, night, onPane }: { g: HouseGeometry; variant: "m" | "d"; clockT: number; night: boolean; onPane: (e: React.MouseEvent<Element>, slug: string) => void }) {
+function Variant({ g, variant, clockT, night, onPane, photosOn }: { g: HouseGeometry; variant: "m" | "d"; clockT: number; night: boolean; onPane: (e: React.MouseEvent<Element>, slug: string) => void; photosOn: boolean }) {
   const mark = markDrawing();
   const sun = sunOnArch(clockT, g);
   const fs = variant === "m" ? 12.5 : 17;
@@ -47,14 +53,17 @@ function Variant({ g, variant, clockT, night, onPane }: { g: HouseGeometry; vari
       </g>
 
       <g className="house-panes">
-        {g.panes.map((p) => {
+        {g.panes.map((p, idx) => {
           const { d, vb } = vignetteOf(p.slug, p.drawing);
+          const photo = PANE_PHOTO(p.drawing);
           return (
-            <a key={p.slug} href={`/spaces#${p.slug}`} className="pane" aria-label={p.name} onClick={(e) => onPane(e, p.slug)}>
+            <a key={p.slug} href={`/spaces#${p.slug}`} className="pane" aria-label={p.name} onClick={(e) => onPane(e, p.slug)} style={{ ["--i" as string]: idx }}>
               <rect className="pane-hit" x={p.x} y={p.y} width={p.w} height={p.h} />
               <rect className="pane-frame" x={p.x + 5} y={p.y + 5} width={p.w - 10} height={p.h - 10} />
               {d ? (
-                <svg className="vignette" x={p.x + 8} y={p.y + fs + 16} width={p.w - 16} height={p.h - fs - 24} viewBox={vb} preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                <svg className={`vignette${photo ? " has-photo" : " no-photo"}`} x={p.x + 8} y={p.y + fs + 16} width={p.w - 16} height={p.h - fs - 24} viewBox={vb} preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+                  {photo ? <image className="pane-photo" href={photosOn ? photo : undefined} x={d.x ?? 0} y={d.y ?? 0} width={d.width} height={d.height} preserveAspectRatio="none" /> : null}
+                  {photo ? <rect className="pane-wash" x={d.x ?? 0} y={d.y ?? 0} width={d.width} height={d.height} /> : null}
                   {d.glows?.map((gl, i) => <circle key={i} className="glow" cx={gl.x} cy={gl.y} r={gl.r} fill={`url(#sun-glow-${variant})`} />)}
                   {d.strokes.map((s, i) => <path key={i} className={`v v-${s.layer}`} d={s.d} />)}
                 </svg>
@@ -96,6 +105,19 @@ export function House() {
   const root = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const flying = useRef(false);
+  const [view, setView] = useState<View>("drawing");
+  const [photosOn, setPhotosOn] = useState(false);
+  const radios = useRef<(HTMLButtonElement | null)[]>([]);
+  const choose = (v: View, focus = false) => {
+    setView(v);
+    if (v !== "drawing") setPhotosOn(true);
+    if (focus) radios.current[VIEWS.findIndex((x) => x.v === v)]?.focus();
+  };
+  const onRadioKey = (e: React.KeyboardEvent) => {
+    const i = VIEWS.findIndex((x) => x.v === view);
+    if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); choose(VIEWS[(i + 1) % 3].v, true); }
+    else if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); choose(VIEWS[(i + 2) % 3].v, true); }
+  };
 
   useEffect(() => { router.prefetch("/spaces"); }, [router]);
 
@@ -217,9 +239,30 @@ export function House() {
   }, []);
 
   return (
-    <div ref={root} className="house-wrap">
-      <Variant g={MOBILE} variant="m" clockT={clockT} night={night} onPane={onPane} />
-      <Variant g={DESKTOP} variant="d" clockT={clockT} night={night} onPane={onPane} />
+    <div ref={root} className="house-wrap" data-view={view}>
+      <Variant g={MOBILE} variant="m" clockT={clockT} night={night} onPane={onPane} photosOn={photosOn} />
+      <Variant g={DESKTOP} variant="d" clockT={clockT} night={night} onPane={onPane} photosOn={photosOn} />
+      <div className="view-bar">
+        <div className="view-toggle" role="radiogroup" aria-label="See the rooms as" onKeyDown={onRadioKey}>
+          {VIEWS.map((x, i) => (
+            <button
+              key={x.v}
+              ref={(el) => { radios.current[i] = el; }}
+              type="button"
+              role="radio"
+              aria-checked={view === x.v}
+              tabIndex={view === x.v ? 0 : -1}
+              className="view-option"
+              onClick={() => choose(x.v)}
+            >
+              {x.label}
+            </button>
+          ))}
+        </div>
+        <p className="t-label view-note" aria-live="polite">
+          {view === "drawing" ? "Every room is drawn from the house's own photographs." : "The games corner and the bowling alley have no clean photograph yet, so they stay drawn."}
+        </p>
+      </div>
     </div>
   );
 }
