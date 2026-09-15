@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import photos from "@/content/photos.json";
 import { metaFor } from "@/lib/drawings";
+import { cup, steam } from "@/lib/draw/glyphs";
 
 type View = "drawing" | "both" | "photo";
 const VIEWS: { v: View; label: string }[] = [{ v: "drawing", label: "Drawing" }, { v: "both", label: "Both" }, { v: "photo", label: "Photograph" }];
@@ -72,6 +73,12 @@ function Variant({ g, variant, clockT, night, onPane, photosOn }: { g: HouseGeom
             </a>
           );
         })}
+      </g>
+
+      {/* the logo's cup on the roofline, its steam drifting up into the arch */}
+      <g className="arch-steam" aria-hidden="true">
+        {cup([g.cx, g.spring - 3], variant === "m" ? 16 : 34, variant === "m" ? 12 : 25).map((s, i) => <path key={`c${i}`} className="steam-cup" d={s.d} />)}
+        {steam([g.cx - (variant === "m" ? 1 : 2), g.spring - (variant === "m" ? 20 : 36)], variant === "m" ? 30 : 64, 0).map((s, i) => <path key={`s${i}`} className="steam-line" d={s.d} />)}
       </g>
 
       <g className="house-lines" aria-hidden="true">

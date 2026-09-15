@@ -85,6 +85,13 @@ html[data-motion="on"] .drawing[data-pending] .ln { visibility: hidden; animatio
 .site-footer nav a, .rooms-nav a { display: inline-flex; align-items: center; min-height: 44px; }
 .site-menu a { display: flex; align-items: center; min-height: 56px; }
 
+/* leaves sway a little; architecture never moves */
+.drawing path[data-id^="leaf-"] { transform-box: fill-box; transform-origin: 50% 100%; animation: leaf-sway 5.5s ease-in-out infinite; }
+.drawing path[data-id^="leaf-"]:nth-child(2n) { animation-delay: -1.6s; animation-duration: 6.4s; }
+.drawing path[data-id^="leaf-"]:nth-child(3n) { animation-delay: -3.1s; animation-duration: 4.9s; }
+@keyframes leaf-sway { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(6deg); } }
+@media (prefers-reduced-motion: reduce) { .drawing path[data-id^="leaf-"] { animation: none !important; } }
+
 /* the day and night switch */
 .site-actions { display: flex; align-items: center; gap: 6px; position: relative; z-index: 2; }
 .regime-switch { width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color 300ms var(--ease-pen); }

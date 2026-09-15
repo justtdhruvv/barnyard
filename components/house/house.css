@@ -46,6 +46,14 @@ html[data-regime="night"] .house .vignette path.v-lamp { stroke: var(--lamp); }
 .house-wrap[data-view="photo"] .house .vignette.has-photo .glow { opacity: 0; }
 @media (prefers-reduced-motion: reduce) { .house .pane-photo { transform: none; transition-delay: 0ms; } }
 
+/* steam from the logo's cup, drifting into the arch */
+.arch-steam .steam-line { transform-box: fill-box; transform-origin: 50% 100%; animation: steam-drift 4.2s ease-in-out infinite; opacity: 0; }
+.arch-steam .steam-line:nth-of-type(4) { animation-delay: 0.7s; }
+.arch-steam .steam-line:nth-of-type(5) { animation-delay: 1.4s; }
+@keyframes steam-drift { 0% { opacity: 0; transform: translateY(18%) scaleY(0.7); } 35% { opacity: 0.9; } 100% { opacity: 0; transform: translateY(-22%) scaleY(1.05); } }
+@media (prefers-reduced-motion: reduce) { .arch-steam .steam-line { animation: none !important; opacity: 0.9; transform: none; } }
+html[data-regime="night"] .arch-steam .steam-line { stroke: var(--ink-2); }
+
 /* pressed pane */
 .house .pane { -webkit-tap-highlight-color: transparent; }
 .house .pane:active .pane-frame { stroke: var(--pen); stroke-width: 2px; }
