@@ -66,7 +66,11 @@ function Variant({ g, variant, clockT, night, onPane, photosOn }: { g: HouseGeom
                   {photo ? <image className="pane-photo" href={photosOn ? photo : undefined} x={d.x ?? 0} y={d.y ?? 0} width={d.width} height={d.height} preserveAspectRatio="none" /> : null}
                   {photo ? <rect className="pane-wash" x={d.x ?? 0} y={d.y ?? 0} width={d.width} height={d.height} /> : null}
                   {d.glows?.map((gl, i) => <circle key={i} className="glow" cx={gl.x} cy={gl.y} r={gl.r} fill={`url(#sun-glow-${variant})`} />)}
-                  {d.strokes.map((s, i) => <path key={i} className={`v v-${s.layer}`} d={s.d} />)}
+                  {(["structure", "detail", "life", "lamp"] as const).map((layer) => (
+                    <g key={layer} className={`vl vl-${layer}`}>
+                      {d.strokes.filter((s) => s.layer === layer).map((s, i) => <path key={i} className={`v v-${layer}`} d={s.d} />)}
+                    </g>
+                  ))}
                 </svg>
               ) : null}
               <text className="pane-label" x={p.x + 10} y={p.y + fs + 8} fontSize={fs}>{p.name}</text>
@@ -120,6 +124,43 @@ export function House() {
     if (v !== "drawing") setPhotosOn(true);
     if (focus) radios.current[VIEWS.findIndex((x) => x.v === v)]?.focus();
   };
+  // tilt to look: on phones, the pane drawings' layers shift at different depths as the phone turns
+  const [canTilt, setCanTilt] = useState(false);
+  const [tilting, setTilting] = useState(false);
+  useEffect(() => {
+    setCanTilt("DeviceOrientationEvent" in window && matchMedia("(pointer: coarse)").matches && motionAllowed());
+  }, []);
+  const toggleTilt = async () => {
+    if (tilting) { setTilting(false); return; }
+    const DOE = (window as unknown as { DeviceOrientationEvent?: { requestPermission?: () => Promise<string> } }).DeviceOrientationEvent;
+    if (DOE && typeof DOE.requestPermission === "function") {
+      try { if ((await DOE.requestPermission()) !== "granted") return; } catch { return; }
+    }
+    setTilting(true);
+  };
+  useEffect(() => {
+    const el = root.current;
+    if (!tilting || !el) return;
+    let base: [number, number] | null = null;
+    let raf = 0, tx = 0, ty = 0;
+    const onTilt = (e: DeviceOrientationEvent) => {
+      if (e.gamma == null || e.beta == null) return;
+      if (!base) base = [e.gamma, e.beta];
+      tx = Math.max(-1, Math.min(1, (e.gamma - base[0]) / 25));
+      ty = Math.max(-1, Math.min(1, (e.beta - base[1]) / 25));
+      if (!raf) raf = requestAnimationFrame(() => { raf = 0; el.style.setProperty("--tx", tx.toFixed(3)); el.style.setProperty("--ty", ty.toFixed(3)); });
+    };
+    window.addEventListener("deviceorientation", onTilt);
+    el.setAttribute("data-tilt", "");
+    return () => {
+      window.removeEventListener("deviceorientation", onTilt);
+      cancelAnimationFrame(raf);
+      el.removeAttribute("data-tilt");
+      el.style.removeProperty("--tx");
+      el.style.removeProperty("--ty");
+    };
+  }, [tilting]);
+
   const onRadioKey = (e: React.KeyboardEvent) => {
     const i = VIEWS.findIndex((x) => x.v === view);
     if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); choose(VIEWS[(i + 1) % 3].v, true); }
@@ -266,6 +307,11 @@ export function House() {
             </button>
           ))}
         </div>
+        {canTilt ? (
+          <button type="button" className="tilt-button" aria-pressed={tilting} onClick={toggleTilt}>
+            {tilting ? "Stop tilting" : "Tilt to look"}
+          </button>
+        ) : null}
         <p className="t-label view-note" aria-live="polite">
           {view === "drawing" ? "Every room is drawn from the house's own photographs." : "The games corner and the bowling alley have no clean photograph yet, so they stay drawn."}
         </p>

@@ -38,9 +38,10 @@
     ".next-prod5/types/**/*.ts",
     ".next-prod6/types/**/*.ts",
     ".next-prod7/types/**/*.ts",
+    ".next-prod8/types/**/*.ts",
     ".next/types/**/*.ts",
     "next-env.d.ts",
-    ".next-prod8/types/**/*.ts"
+    ".next-prod9/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

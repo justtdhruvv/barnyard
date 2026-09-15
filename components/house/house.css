@@ -46,6 +46,15 @@ html[data-regime="night"] .house .vignette path.v-lamp { stroke: var(--lamp); }
 .house-wrap[data-view="photo"] .house .vignette.has-photo .glow { opacity: 0; }
 @media (prefers-reduced-motion: reduce) { .house .pane-photo { transform: none; transition-delay: 0ms; } }
 
+/* tilt to look: layers at different depths (units are the room drawing's own frame) */
+.tilt-button { min-height: 44px; padding: 0 16px; border: 0; background: transparent; color: var(--ink); font-family: var(--font-display); font-weight: 500; font-size: 0.95rem; text-decoration: underline; text-decoration-color: var(--hair); text-underline-offset: 6px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.tilt-button[aria-pressed="true"] { color: var(--pen); text-decoration-color: var(--pen); }
+.house-wrap[data-tilt] .vignette .vl { transition: transform 140ms linear; }
+.house-wrap[data-tilt] .vignette .vl-structure { transform: translate(calc(var(--tx, 0) * 8px), calc(var(--ty, 0) * 8px)); }
+.house-wrap[data-tilt] .vignette .vl-detail { transform: translate(calc(var(--tx, 0) * 20px), calc(var(--ty, 0) * 20px)); }
+.house-wrap[data-tilt] .vignette .vl-life, .house-wrap[data-tilt] .vignette .vl-lamp { transform: translate(calc(var(--tx, 0) * 36px), calc(var(--ty, 0) * 36px)); }
+@media (prefers-reduced-motion: reduce) { .house-wrap .vignette .vl { transform: none !important; } }
+
 /* steam from the logo's cup, drifting into the arch */
 .arch-steam .steam-line { transform-box: fill-box; transform-origin: 50% 100%; animation: steam-drift 4.2s ease-in-out infinite; opacity: 0; }
 .arch-steam .steam-line:nth-of-type(4) { animation-delay: 0.7s; }
