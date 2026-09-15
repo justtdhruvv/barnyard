@@ -80,7 +80,10 @@ html[data-motion="on"] .drawing[data-pending] .ln { visibility: hidden; animatio
 @keyframes pen-line { 0% { transform: scaleX(0); opacity: 1; } 55% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1); opacity: 0; } }
 
 .site-footer { padding-block: 48px 64px; border-top: 1px solid var(--hair); display: grid; gap: 18px; }
-.site-footer nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 22px; }
+.site-footer nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0 22px; }
+/* thumb-sized targets for text links in lists */
+.site-footer nav a, .rooms-nav a { display: inline-flex; align-items: center; min-height: 44px; }
+.site-menu a { display: flex; align-items: center; min-height: 56px; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 150ms !important; }

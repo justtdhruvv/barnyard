@@ -7,6 +7,7 @@ import { addressLines, cafe, eventDate, fact, mapsHref, phoneHref, pressDate, wh
 import { formatClock } from "@/lib/daylight";
 import { maybeDrawing } from "@/lib/maybe";
 import { Wipe } from "@/components/draw/Wipe";
+import { DoorsInView } from "@/components/home/DoorsInView";
 import type { Photo } from "@/components/draw/Sheet";
 import photos from "@/content/photos.json";
 import { metaFor } from "@/lib/drawings";
@@ -85,6 +86,7 @@ export default function Home() {
 
       <section id="ways" className="ways wrap" aria-labelledby="ways-title">
         <h2 id="ways-title" className="t-head">Four ways into the house</h2>
+        <DoorsInView />
         <ul className="doors">
           {doors.map((d) => (
             <li key={d.kind}>

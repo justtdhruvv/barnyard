@@ -40,6 +40,8 @@ A pitch demo for The Barnyard Co., a 10,000 sq ft design-led café in Chandkheda
 
 ## How to work
 
+- A demo cut was built on `main` on 15 Sep 2026 before the plan was executed. Read `docs/plan.md` section "Cross-task reconciliation" item 1 first, and work on a `plan/full` branch.
+
 - Execute `docs/plan.md` with the superpowers:subagent-driven-development or superpowers:executing-plans skill. One commit per task; commit messages end with the co-author line the harness gives you.
 - Use the motion-design, animate and delight skills where a task touches motion; frontend-design for layout and type.
 - Look at your work: Playwright MCP screenshots at 390x844 and 1440x900, day (`?at=14:00`) and night (`?at=01:00`), for every drawing and page you change. Read the screenshots before calling anything done. Judge drawings at 100% zoom on the phone screenshot.

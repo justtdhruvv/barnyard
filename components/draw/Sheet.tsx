@@ -32,7 +32,13 @@ export function Sheet({ drawing, photo, credit, lift, mode = "view", className, 
 
   const down = (e: React.PointerEvent) => {
     if (!canLift || e.button !== 0) return;
-    const timer = window.setTimeout(() => { if (hold.current) { hold.current.holding = true; setLifted(true); } }, 350);
+    const timer = window.setTimeout(() => {
+      if (hold.current) {
+        hold.current.holding = true;
+        setLifted(true);
+        try { navigator.vibrate?.(10); } catch { /* not supported */ }
+      }
+    }, 350);
     hold.current = { timer, x: e.clientX, y: e.clientY, holding: false };
   };
   const move = (e: React.PointerEvent) => {

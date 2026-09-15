@@ -33,7 +33,12 @@
 .door-inside { opacity: 0.18; transition: opacity 600ms var(--ease-pen); }
 .door-card:hover .door-leaf, .door-card:focus-visible .door-leaf { transform: scaleX(0.28); }
 .door-card:hover .door-inside, .door-card:focus-visible .door-inside { opacity: 1; }
-@media (hover: none) { .door-leaf { transform: scaleX(0.28); } .door-inside { opacity: 1; } }
+/* on touch screens the doors open as they come into view, and a tap presses them */
+.door-card[data-open] .door-leaf { transform: scaleX(0.28); }
+.door-card[data-open] .door-inside { opacity: 1; }
+.door-card { -webkit-tap-highlight-color: transparent; transition: transform 200ms var(--ease-pen); }
+.door-card:active { transform: scale(0.98); }
+.press-words .pen-link { display: inline-block; padding-block: 12px; margin-block: -12px; }
 .door-title { font-family: var(--font-display); font-weight: 400; font-size: clamp(1.35rem, 1rem + 1.2vw, 1.75rem); line-height: 1.1; letter-spacing: -0.01em; }
 .door-proof { font-size: 0.975rem; line-height: 1.5; color: var(--ink-2); }
 .door-action { color: var(--ink); text-decoration: underline; text-decoration-color: var(--hair); text-underline-offset: 5px; }
