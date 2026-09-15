@@ -4,7 +4,7 @@
 @media (min-width: 48rem) {
   .house-m { display: none; }
   .house-d { display: block; }
-  .house-wrap { max-width: min(100%, calc((100svh - 150px) * 1000 / 924)); }
+  .house-wrap { max-width: min(100%, calc((100svh - 250px) * 1000 / 924)); }
 }
 
 .house path, .house circle.ln { fill: none; stroke: var(--ink); stroke-width: var(--line-w); stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
@@ -24,7 +24,7 @@ html[data-regime="night"] .house .vignette path.v-lamp { stroke: var(--lamp); }
 .house-sun .sun-glow { opacity: 0; transition: opacity 600ms var(--ease-pen); }
 .house-sun.is-lamp .sun-glow { opacity: 1; }
 .house-sun.is-lamp .sun-disc { stroke: var(--lamp); fill: color-mix(in oklch, var(--lamp) 35%, transparent); }
-.house-sun.is-lamp .sun-ray { stroke: var(--lamp); opacity: 0.5; }
+.house-sun.is-lamp .sun-ray { stroke: var(--lamp); opacity: 0; }
 
 .house-wrap[data-arriving] .pane { pointer-events: none; }
 /* until the arrival starts (or is skipped), hold the house back; CSS shows it anyway after 2.5 s */

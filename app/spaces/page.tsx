@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: "The rooms", description: `The ${room
 const PHOTOS = photos as Record<string, Photo>;
 
 const NOTES: Record<string, string> = {
-  games: "There is no photograph of this corner yet, so it is drawn as a still life of what is there.",
+  games: "There is no photograph of this corner yet, so it is drawn as a still life of what is there. Tap the table to roll the cue ball.",
   "alley-sign": "The only photograph of this sign has a caption across it, so the drawing stays down.",
 };
 

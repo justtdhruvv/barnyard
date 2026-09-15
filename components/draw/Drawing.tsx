@@ -62,6 +62,44 @@ export function Drawing({ drawing, mode = "static", title, className, onDrawn, d
     return () => { cancelled = true; cleanup?.(); };
   }, [mode, drawing.id]);
 
+  // the cue ball rolls along the felt when the drawing is tapped
+  useEffect(() => {
+    const svg = root.current;
+    const roll = drawing.roll;
+    if (!svg || !roll) return;
+    const ball = svg.querySelector<SVGPathElement>(`path[data-id="${roll.ball}"]`);
+    if (!ball) return;
+    const guide = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    guide.setAttribute("d", roll.path);
+    guide.setAttribute("visibility", "hidden");
+    guide.setAttribute("class", "roll-guide");
+    svg.appendChild(guide);
+    let raf = 0, rolling = false, timer = 0;
+    const onClick = () => {
+      if (rolling || !motionAllowed()) return;
+      rolling = true;
+      const len = guide.getTotalLength();
+      const start = guide.getPointAtLength(0);
+      const t0 = performance.now();
+      const step = (now: number) => {
+        const k = Math.min(1, (now - t0) / 1400);
+        const e = 1 - Math.pow(1 - k, 3);
+        const p = guide.getPointAtLength(e * len);
+        ball.setAttribute("transform", `translate(${(p.x - start.x).toFixed(1)} ${(p.y - start.y).toFixed(1)})`);
+        if (k < 1) { raf = requestAnimationFrame(step); return; }
+        timer = window.setTimeout(() => {
+          ball.style.transition = "opacity 300ms";
+          ball.style.opacity = "0";
+          timer = window.setTimeout(() => { ball.removeAttribute("transform"); ball.style.opacity = "1"; rolling = false; }, 320);
+        }, 1200);
+      };
+      raf = requestAnimationFrame(step);
+    };
+    svg.addEventListener("click", onClick);
+    svg.style.cursor = "pointer";
+    return () => { svg.removeEventListener("click", onClick); cancelAnimationFrame(raf); window.clearTimeout(timer); guide.remove(); };
+  }, [drawing]);
+
   return (
     <svg
       ref={root}
