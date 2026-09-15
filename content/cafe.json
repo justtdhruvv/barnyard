@@ -1,0 +1,414 @@
+{
+  "_README": "Single source of truth for The Barnyard Co. website. Every fact here was verified from the cafe's own Instagram, published press, or listing sites. Fields marked UNKNOWN must not be rendered — see BRIEF.md section 8. Do not add facts to this file that you have not been given.",
+  "meta": {
+    "name": "The Barnyard Co.",
+    "shortName": "Barnyard",
+    "ownHashtag": "feelathome",
+    "city": "Ahmedabad",
+    "address": {
+      "line1": "Plot No. 208, FP 36/2",
+      "line2": "Sardar Patel Ring Road",
+      "landmark": "Near Zundal Circle",
+      "area": "Chandkheda",
+      "region": "North Ahmedabad",
+      "state": "Gujarat",
+      "postalCode": "382424",
+      "country": "IN"
+    },
+    "phone": "+918780591708",
+    "phoneDisplay": "87805 91708",
+    "instagram": "https://www.instagram.com/thebarnyard.co/",
+    "instagramHandle": "@thebarnyard.co",
+    "followers": 5055,
+    "postCount": 121,
+    "opened": "2023-10",
+    "openedNote": "Two-year anniversary post published 14 Oct 2025",
+    "hours": {
+      "open": "11:00",
+      "close": "03:00",
+      "note": "CONFIRM — bio says 11 AM to 3 AM; a Nov 2025 post says 11 AM to 4 AM"
+    },
+    "brunchHours": {
+      "open": "10:00",
+      "close": "13:00",
+      "days": "Mon-Sun"
+    },
+    "sizeSqFt": 10000,
+    "buildCostInr": 20000000,
+    "buildCostDisplay": "₹2 crore",
+    "buildDurationYears": 1,
+    "yearBuilt": 2023,
+    "costForTwo": "₹1,000",
+    "costForTwoSource": "EazyDiner listing",
+    "vegetarianOnly": "CONFIRM — EazyDiner lists the restaurant as pure vegetarian",
+    "owner": "CONFIRM — a customer comment names the owner as Harsh",
+    "parking": "Ample parking; repeatedly mentioned in reviews as a plus",
+    "geo": "UNKNOWN"
+  },
+  "voice": {
+    "note": "These are the cafe's own words, pulled from their own captions. Use them as the register to write in. Adapt — do not paste verbatim into headlines.",
+    "coreIdea": "Feel at home. Slow down. Stay a little longer.",
+    "recurringThemes": [
+      "warmth and belonging over transaction",
+      "time slowing down; days softer, nights softer",
+      "comfort and calm rather than energy and buzz",
+      "community, gathering, and things made together",
+      "craft and care in how things are made"
+    ],
+    "ownPhrasings": [
+      "a place where days slow down and nights feel softer",
+      "where time slows, but work flows",
+      "more than just food — warmth, stories and a sense of belonging",
+      "a cafe should do more than serve, it should soothe",
+      "bright corners that hold calm",
+      "every visit feels like home"
+    ]
+  },
+  "design": {
+    "note": "The architectural story. This is the strongest raw material on the site.",
+    "architect": "Ar. Rohan Bhargade",
+    "studio": "Mudra Design Studio",
+    "studioInstagram": "https://www.instagram.com/mudra.designstudio/",
+    "designTeam": [
+      "Ramarao Uttarala",
+      "Akshay Mandaokar"
+    ],
+    "photographer": "Rishabh Goenka",
+    "photographerInstagram": "https://www.instagram.com/rishigoenkaphotography/",
+    "lightingDesigner": "Arihant Innovations",
+    "structuralEngineers": "Induce Engineering",
+    "concept": "Conceived as an unpretentious loft house — the inclusivity of a barnyard, built as a home rather than a restaurant, so regulars can make themselves at home.",
+    "materials": [
+      "oxidised corten steel signage and doors",
+      "entry facade of upcycled bottles set into metal mesh",
+      "exposed brick throughout",
+      "ceiling of pallet wood strips made from fruit-vendor crates collected at local farmers' markets",
+      "raw concrete floors; wooden flooring on the mezzanine",
+      "tall floor-to-ceiling windows and skylights",
+      "salvaged furniture sourced from Jogeshwari market, Mumbai",
+      "refurbished upholstery, Chesterfield couches, an Indian seating platform",
+      "ship lamps and vintage bakelite switches",
+      "vintage maps of Ahmedabad and work by regional artists",
+      "heavy planting throughout"
+    ],
+    "signatureObjects": [
+      "A pair of vintage wardrobe doors mounted on the north wall as a single artwork.",
+      "An old Jogeshwari dining table, legs shortened to coffee-table height, its glass top enclosing vintage movie posters and a scatter of the coffee beans used in the cafe."
+    ]
+  },
+  "press": [
+    {
+      "publication": "Architectural Digest India",
+      "date": "2024-11-22",
+      "angle": "A new cafe in Ahmedabad designed like an industrial loft",
+      "summary": "Featured the building as a modern industrial cafe serving coffee alongside upcycled design.",
+      "link": "https://www.instagram.com/p/DCrDLZRsK4i/",
+      "linkType": "instagram-announcement",
+      "canonicalLink": "UNKNOWN",
+      "tier": 1,
+      "quote": "I wanted to create a space that reveals itself slowly.",
+      "quoteBy": "Rohan Bhargade, Mudra Design Studio, in Architectural Digest India",
+      "reportedArticleDate": "2024-07-06 (unconfirmed; the article URL is blocked to crawlers and must be checked in a browser)"
+    },
+    {
+      "publication": "Condé Nast Traveller India",
+      "date": "2024-09-12",
+      "author": "Chaitali Patel",
+      "angle": "6 cafés in Ahmedabad with a design-forward focus",
+      "link": "https://www.cntraveller.in/story/cafes-in-ahmedabad/",
+      "linkType": "article",
+      "canonicalLink": "https://www.cntraveller.in/story/cafes-in-ahmedabad/",
+      "tier": 1,
+      "instagramAnnouncement": "https://www.instagram.com/p/DC1mR1FM949/"
+    },
+    {
+      "publication": "ELLE Decor India",
+      "date": "2025-06-10",
+      "angle": "These restaurants are a visual platter of colours, textures and decor",
+      "note": "Co-posted with Mudra Design Studio",
+      "link": "https://elledecor.in/12-design-oriented-restaurants-delhi-bengaluru-amritsar-hyderabad/",
+      "linkType": "article",
+      "canonicalLink": "https://elledecor.in/12-design-oriented-restaurants-delhi-bengaluru-amritsar-hyderabad/",
+      "tier": 1,
+      "author": "Krishna Jaisinghani",
+      "instagramAnnouncement": "https://www.instagram.com/p/DL4m92EP4iF/",
+      "quote": "Palette wood strips make up the ceiling of The Barnyard Co. in Ahmedabad, the use of salvaged materials showing the guest how items can have a chance at a second life.",
+      "quoteBy": "ELLE Decor India"
+    },
+    {
+      "publication": "The Architect's Diary",
+      "date": "2025-01-24",
+      "angle": "Eclectic interior style: a full project feature with a fact file",
+      "link": "https://thearchitectsdiary.com/the-barnyard-co-echoes-hospitality-through-eclectic-interior-style-mudra-design-studio/",
+      "linkType": "article",
+      "tier": 2
+    },
+    {
+      "publication": "Knocksense",
+      "date": "2026-03-30",
+      "angle": "Why this Ahmedabad cafe with contemporary industrial loft design deserves a visit",
+      "link": "https://www.knocksense.com/ahmedabad/heres-why-this-ahmedabad-cafe-with-its-contemporary-industrial-loft-design-deserves-a-visit/",
+      "linkType": "article",
+      "tier": 2
+    }
+  ],
+  "spaces": [
+    {
+      "slug": "facade",
+      "name": "The facade",
+      "description": "Oxidised corten steel signage and a wall of upcycled bottles set into metal mesh. The first thing you see, and the reason people stop.",
+      "assets": "partial"
+    },
+    {
+      "slug": "entry",
+      "name": "The entry hall",
+      "description": "A ceiling of pallet wood strips — fruit crates collected from local farmers' markets — running the length of the hallway, lined with salvaged objects and art before the room opens up.",
+      "assets": "partial"
+    },
+    {
+      "slug": "main-floor",
+      "name": "The main floor",
+      "description": "Exposed brick, raw concrete, black steel structure and floor-to-ceiling windows. The room the magazines photographed.",
+      "assets": "good"
+    },
+    {
+      "slug": "mezzanine",
+      "name": "The mezzanine",
+      "description": "Shared tables and a relaxed living area on wooden flooring, looking down over the main floor.",
+      "assets": "partial"
+    },
+    {
+      "slug": "courtyard",
+      "name": "The courtyard",
+      "description": "A central open-air court with varied seating, surrounded by planting.",
+      "assets": "partial"
+    },
+    {
+      "slug": "bowling",
+      "name": "The bowling alley",
+      "description": "Recently opened. No further detail confirmed.",
+      "assets": "none",
+      "note": "NO ASSETS ANYWHERE. Not on their Instagram, not on the web. Build the page, placehold the imagery, do not invent lane counts, pricing or hours."
+    },
+    {
+      "slug": "games",
+      "name": "The games corner",
+      "description": "A pool table, board games and a shelf of books.",
+      "note": "Mentioned repeatedly by reviewers.",
+      "assets": "none"
+    }
+  ],
+  "uses": [
+    {
+      "slug": "eat",
+      "name": "Eat and drink",
+      "note": "Do not lead with this — see BRIEF.md section 4."
+    },
+    {
+      "slug": "host",
+      "name": "Host something",
+      "detail": "Birthdays, ceremonies, private hire. The Architect's Diary explicitly describes the layout as flexible and multifunctional, hosting pop-ups and performances by night — useful third-party validation for this page.",
+      "proof": [
+        "coffee-garba",
+        "hoodie-workshop",
+        "kaunversations"
+      ]
+    },
+    {
+      "slug": "shoot",
+      "name": "Shoot here",
+      "detail": "Film, photo, brand and influencer shoots. The strongest B2B argument: a ₹2-crore, 10,000 sq ft, magazine-published set that is already lit, dressed and varied across six distinct rooms.",
+      "proof": [
+        "nocatch"
+      ],
+      "gap": "Need a list of productions and brands that have actually shot here. Ask the owner."
+    },
+    {
+      "slug": "bowl",
+      "name": "Bowl",
+      "detail": "The newest thing they have and completely unmarketed.",
+      "gap": "No assets, no details."
+    },
+    {
+      "slug": "work",
+      "name": "Work late",
+      "detail": "Open until 3 AM, laptop-friendly, quiet corners. Their own co-working reel did 149,000 plays with nothing to convert it. Give this a section on /spaces, not its own page."
+    }
+  ],
+  "events": [
+    {
+      "slug": "coffee-garba",
+      "name": "Coffee Garba",
+      "date": "2025-09-06",
+      "description": "A Navratri evening of live folk music, coffee and food, run with iJam Artists & Events.",
+      "partners": [
+        "iJam Artists & Events",
+        "Talk that Damn Point",
+        "Sam Ratri"
+      ],
+      "reach": "24,000 plays on the promo reel"
+    },
+    {
+      "slug": "hoodie-workshop",
+      "name": "Hoodie Painting Workshop",
+      "date": "2025-12-18",
+      "description": "A guided hands-on session turning a plain hoodie into a hand-painted piece. Materials provided, no experience needed, registration by form.",
+      "partners": [
+        "Paumil Khatri",
+        "Chitram Vastram",
+        "Artssyy"
+      ],
+      "reach": "253,000 plays — the single highest-reach piece of content associated with the venue"
+    },
+    {
+      "slug": "kaunversations",
+      "name": "Phone-free Sundays",
+      "date": "2025-04 to 2025-05",
+      "description": "A recurring series of phone-free afternoons — games, building things, conversation, no screens — run with Kaunversations.",
+      "partners": [
+        "Kaunversations"
+      ]
+    },
+    {
+      "slug": "nocatch",
+      "name": "NoCatch brand film",
+      "date": "2025-11-25",
+      "description": "A brand shot their launch film on location at the cafe.",
+      "type": "shoot-credit"
+    }
+  ],
+  "menu": {
+    "note": "Deliberately light. Signatures only, no full price list. See BRIEF.md section 4.",
+    "cuisines": [
+      "Italian",
+      "North Indian",
+      "Desserts",
+      "Coffee",
+      "Mocktails"
+    ],
+    "signatures": [
+      {
+        "name": "Curriza",
+        "category": "Handmade pizza",
+        "price": "₹545"
+      },
+      {
+        "name": "Patatas Bravas",
+        "category": "Small plates",
+        "price": "₹335"
+      },
+      {
+        "name": "Avocado croissant",
+        "category": "All day",
+        "price": "₹310"
+      },
+      {
+        "name": "Honey chilli lotus stem",
+        "category": "Small plates",
+        "price": "UNKNOWN"
+      },
+      {
+        "name": "Roasted hazelnut cold coffee",
+        "category": "Coffee",
+        "price": "UNKNOWN"
+      },
+      {
+        "name": "Tiramisu",
+        "category": "Dessert",
+        "price": "UNKNOWN"
+      },
+      {
+        "name": "Biscoff cheesecake",
+        "category": "Dessert",
+        "price": "UNKNOWN"
+      },
+      {
+        "name": "Watermelon mojito",
+        "category": "Mocktails",
+        "price": "UNKNOWN"
+      },
+      {
+        "name": "Peach iced tea",
+        "category": "Mocktails",
+        "price": "UNKNOWN"
+      }
+    ],
+    "brunch": {
+      "name": "Fixed brunch",
+      "hours": "10 AM – 1 PM, daily",
+      "includes": [
+        "fresh juice",
+        "coffee",
+        "pasta",
+        "salad",
+        "open toast",
+        "croissant",
+        "Thai curry with rice"
+      ],
+      "price": "UNKNOWN"
+    }
+  },
+  "performance": {
+    "note": "Reach data for choosing hero footage and understanding what actually resonates. Not for display on the site.",
+    "topContent": [
+      {
+        "subject": "Hoodie painting workshop",
+        "plays": 253804,
+        "author": "creator"
+      },
+      {
+        "subject": "Working late at the cafe (co-working angle)",
+        "plays": 149480,
+        "author": "own"
+      },
+      {
+        "subject": "Group hangout / plating",
+        "plays": 167256,
+        "author": "own"
+      },
+      {
+        "subject": "Pizza being made by hand",
+        "plays": 116282,
+        "author": "own"
+      },
+      {
+        "subject": "Winter / hot chocolate mood piece",
+        "plays": 89978,
+        "author": "creator"
+      },
+      {
+        "subject": "\"Elle and AD recognised cafe\"",
+        "plays": 52961,
+        "author": "creator"
+      },
+      {
+        "subject": "Fixed brunch menu walkthrough",
+        "plays": 46459,
+        "author": "creator"
+      },
+      {
+        "subject": "Coffee Garba promo",
+        "plays": 24004,
+        "author": "creator"
+      }
+    ]
+  },
+  "gaps": {
+    "note": "Known unknowns. Do not fill these in with invention. Surface anything new you need in OPEN-QUESTIONS.md.",
+    "blocking": [
+      "High-resolution photography — Rishabh Goenka shot the building for the magazine features; those files have not been handed over",
+      "Bowling alley: no images, no video, no details of any kind",
+      "List of productions, brands and influencers who have actually shot on location",
+      "Event formats they want to sell, and any past private events they can name"
+    ],
+    "nonBlocking": [
+      "Exact closing time — 3 AM or 4 AM",
+      "Whether the kitchen is pure vegetarian",
+      "Owner's name and correct spelling",
+      "Capacity numbers per space",
+      "Hire pricing, or whether pricing should appear at all",
+      "Latitude and longitude for schema markup",
+      "Canonical article URLs for the AD, CNT and ELLE features — currently only the cafe's own announcement posts"
+    ]
+  }
+}

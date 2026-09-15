@@ -1,0 +1,334 @@
+{
+  "_README": "Every image on the site is a named slot here. Files live at public/media/{id}.jpg and, for a separate mobile crop, public/media/{id}.mobile.jpg. A missing file renders a designed placeholder, never a broken image. Aspect is width:height. Priority: hero = LCP candidate, high = above the fold on its route.",
+  "slots": [
+    {
+      "id": "home-hero",
+      "subject": "The main floor from the entry: brick, black steel, tall windows, the mezzanine stair",
+      "alt": "The main floor from the entry: brick, black steel, tall windows, the mezzanine stair.",
+      "aspect": "19:10",
+      "mobileAspect": "4:5",
+      "priority": "hero",
+      "routes": [
+        "/"
+      ],
+      "credit": "Photograph via @thebarnyard.co"
+    },
+    {
+      "id": "facade-corten",
+      "subject": "The corten signage on the concrete wall outside, under the creeper",
+      "alt": "The corten signage on the concrete wall outside, under the creeper.",
+      "aspect": "4:5",
+      "mobileAspect": "4:5",
+      "priority": "high",
+      "routes": [
+        "/",
+        "/spaces",
+        "/shoot"
+      ],
+      "credit": "Still from a reel by @thebarnyard.co"
+    },
+    {
+      "id": "facade-bottles",
+      "subject": "The entry facade of upcycled bottles set into metal mesh",
+      "alt": "A wall of upcycled bottles set into metal mesh at the entry",
+      "aspect": "4:5",
+      "mobileAspect": "1:1",
+      "priority": "normal",
+      "routes": [
+        "/spaces"
+      ]
+    },
+    {
+      "id": "entry-ceiling",
+      "subject": "The entry hall ceiling of pallet-wood strips, looking through to the courtyard",
+      "alt": "The entry hall ceiling of pallet-wood strips, looking through to the courtyard.",
+      "aspect": "3:2",
+      "mobileAspect": "4:5",
+      "priority": "high",
+      "routes": [
+        "/",
+        "/spaces",
+        "/shoot"
+      ],
+      "credit": "Still from a reel by @suryaabrew, via @thebarnyard.co"
+    },
+    {
+      "id": "main-floor-wide",
+      "subject": "The main floor in daylight, wide",
+      "alt": "The main floor in daylight, wide.",
+      "aspect": "21:9",
+      "mobileAspect": "4:5",
+      "priority": "hero",
+      "routes": [
+        "/shoot",
+        "/spaces"
+      ],
+      "credit": "Photograph via @thebarnyard.co"
+    },
+    {
+      "id": "main-floor-glazing",
+      "subject": "Floor-to-ceiling windows on the main floor, with the banana plant",
+      "alt": "Floor-to-ceiling windows on the main floor, with the banana plant.",
+      "aspect": "4:5",
+      "mobileAspect": "4:5",
+      "priority": "normal",
+      "routes": [
+        "/spaces"
+      ],
+      "credit": "Photograph via @thebarnyard.co"
+    },
+    {
+      "id": "mezzanine-overlook",
+      "subject": "The mezzanine stair against the tall windows",
+      "alt": "The mezzanine stair against the tall windows.",
+      "aspect": "4:5",
+      "mobileAspect": "4:5",
+      "priority": "high",
+      "routes": [
+        "/spaces",
+        "/host"
+      ],
+      "credit": "Photograph via @thebarnyard.co"
+    },
+    {
+      "id": "mezzanine-tables",
+      "subject": "The mezzanine after dark: wooden floor, shared tables, the city in the window",
+      "alt": "The mezzanine after dark: wooden floor, shared tables, the city in the window.",
+      "aspect": "3:2",
+      "mobileAspect": "4:5",
+      "priority": "normal",
+      "routes": [
+        "/spaces"
+      ],
+      "credit": "Still from a reel by @anushhkagautam, via @thebarnyard.co"
+    },
+    {
+      "id": "courtyard",
+      "subject": "The courtyard: brick, creepers and a table under the sky",
+      "alt": "The courtyard: brick, creepers and a table under the sky.",
+      "aspect": "3:2",
+      "mobileAspect": "4:5",
+      "priority": "high",
+      "routes": [
+        "/spaces",
+        "/host"
+      ],
+      "credit": "Still from a reel by @suryaabrew, via @thebarnyard.co"
+    },
+    {
+      "id": "games-corner",
+      "subject": "The games corner: pool table, board games and a shelf of books",
+      "alt": "The games corner with a pool table, board games and books",
+      "aspect": "4:5",
+      "mobileAspect": "4:5",
+      "priority": "normal",
+      "routes": [
+        "/spaces"
+      ]
+    },
+    {
+      "id": "late-laptop",
+      "subject": "A laptop on a table in the afternoon light, plants behind",
+      "alt": "A laptop on a table in the afternoon light, plants behind.",
+      "aspect": "3:2",
+      "mobileAspect": "4:5",
+      "priority": "high",
+      "routes": [
+        "/",
+        "/spaces"
+      ],
+      "credit": "Still from a reel by @thebarnyard.co"
+    },
+    {
+      "id": "ship-lamp",
+      "subject": "A wall lamp and a framed print against the brick",
+      "alt": "A wall lamp and a framed print against the brick.",
+      "aspect": "4:5",
+      "mobileAspect": "1:1",
+      "priority": "normal",
+      "routes": [
+        "/spaces"
+      ],
+      "credit": "Still from a reel by @suryaabrew, via @thebarnyard.co"
+    },
+    {
+      "id": "wardrobe-doors",
+      "subject": "The pair of vintage wardrobe doors mounted on the north wall as a single artwork",
+      "alt": "A pair of vintage wardrobe doors mounted on the north wall as one artwork",
+      "aspect": "4:5",
+      "mobileAspect": "4:5",
+      "priority": "normal",
+      "routes": [
+        "/spaces"
+      ]
+    },
+    {
+      "id": "poster-table",
+      "subject": "The old Jogeshwari dining table, legs shortened, vintage movie posters and coffee beans under its glass top",
+      "alt": "A shortened Jogeshwari dining table with vintage movie posters and coffee beans under glass",
+      "aspect": "1:1",
+      "mobileAspect": "1:1",
+      "priority": "normal",
+      "routes": [
+        "/spaces"
+      ]
+    },
+    {
+      "id": "host-hero",
+      "subject": "The mezzanine stair and skylights on a bright afternoon",
+      "alt": "The mezzanine stair and skylights on a bright afternoon.",
+      "aspect": "3:2",
+      "mobileAspect": "4:5",
+      "priority": "hero",
+      "routes": [
+        "/host"
+      ],
+      "credit": "Still from a reel by @thebarnyard.co"
+    },
+    {
+      "id": "host-coffee-garba",
+      "subject": "Coffee Garba, September 2025: the floor seating under the lamps",
+      "alt": "Coffee Garba, September 2025: the floor seating under the lamps.",
+      "aspect": "3:2",
+      "mobileAspect": "4:5",
+      "priority": "high",
+      "routes": [
+        "/host",
+        "/"
+      ],
+      "credit": "Still from a reel by @samhaihum, via @thebarnyard.co"
+    },
+    {
+      "id": "host-hoodie-workshop",
+      "subject": "The hoodie painting workshop, December 2025",
+      "alt": "The hoodie painting workshop, December 2025.",
+      "aspect": "3:2",
+      "mobileAspect": "4:5",
+      "priority": "normal",
+      "routes": [
+        "/host"
+      ],
+      "credit": "Still from a reel by @paulsartgallery98, via @thebarnyard.co"
+    },
+    {
+      "id": "host-phone-free",
+      "subject": "Phone-free Sundays with Kaunversations",
+      "alt": "A phone-free Sunday afternoon with Kaunversations",
+      "aspect": "4:5",
+      "mobileAspect": "4:5",
+      "priority": "normal",
+      "routes": [
+        "/host"
+      ]
+    },
+    {
+      "id": "shoot-hero",
+      "subject": "The main floor under the track lights, the window corner",
+      "alt": "The main floor under the track lights, the window corner.",
+      "aspect": "21:9",
+      "mobileAspect": "4:5",
+      "priority": "hero",
+      "routes": [
+        "/shoot"
+      ],
+      "credit": "Photograph via @thebarnyard.co"
+    },
+    {
+      "id": "shoot-nocatch",
+      "subject": "A frame from the NoCatch brand film: a table by the windows",
+      "alt": "A frame from the NoCatch brand film: a table by the windows.",
+      "aspect": "16:9",
+      "mobileAspect": "4:5",
+      "priority": "high",
+      "routes": [
+        "/shoot"
+      ],
+      "credit": "Still from the NoCatch film by @nocatch.in, via @thebarnyard.co"
+    },
+    {
+      "id": "bowl-hero",
+      "subject": "The BOWL sign outside The Alley after dark",
+      "alt": "The BOWL sign outside The Alley after dark.",
+      "aspect": "16:9",
+      "mobileAspect": "4:5",
+      "priority": "hero",
+      "routes": [
+        "/bowl",
+        "/"
+      ],
+      "credit": "Still from a reel by @thebarnyard.co"
+    },
+    {
+      "id": "bowl-detail",
+      "subject": "The pin and the OPEN sign outside The Alley",
+      "alt": "The pin and the OPEN sign outside The Alley.",
+      "aspect": "4:5",
+      "mobileAspect": "4:5",
+      "priority": "normal",
+      "routes": [
+        "/bowl"
+      ],
+      "credit": "Still from a reel by @thebarnyard.co"
+    },
+    {
+      "id": "menu-curriza",
+      "subject": "A handmade pizza, cut on the board",
+      "alt": "A handmade pizza, cut on the board.",
+      "aspect": "4:5",
+      "mobileAspect": "1:1",
+      "priority": "normal",
+      "routes": [
+        "/menu"
+      ],
+      "credit": "Still from a reel by @thebarnyard.co"
+    },
+    {
+      "id": "menu-coffee",
+      "subject": "An iced coffee, poured",
+      "alt": "An iced coffee, poured.",
+      "aspect": "1:1",
+      "mobileAspect": "1:1",
+      "priority": "normal",
+      "routes": [
+        "/menu"
+      ],
+      "credit": "Still from a reel by @anushhkagautam, via @thebarnyard.co"
+    },
+    {
+      "id": "menu-brunch",
+      "subject": "Pizzas, toasts and shakes on the main floor",
+      "alt": "Pizzas, toasts and shakes on the main floor.",
+      "aspect": "3:2",
+      "mobileAspect": "4:5",
+      "priority": "normal",
+      "routes": [
+        "/menu"
+      ],
+      "credit": "Still from a reel by @anushhkagautam, via @thebarnyard.co"
+    },
+    {
+      "id": "visit-exterior-night",
+      "subject": "The brick and steel windows from outside, lit from within",
+      "alt": "The brick and steel windows from outside, lit from within.",
+      "aspect": "3:2",
+      "mobileAspect": "4:5",
+      "priority": "high",
+      "routes": [
+        "/visit"
+      ],
+      "credit": "Still from a reel by @thebarnyard.co"
+    },
+    {
+      "id": "press-hero",
+      "subject": "The mezzanine stair and windows, the room the magazines photographed",
+      "alt": "The mezzanine stair and windows, the room the magazines photographed.",
+      "aspect": "3:2",
+      "mobileAspect": "4:5",
+      "priority": "high",
+      "routes": [
+        "/press"
+      ],
+      "credit": "Photograph via @thebarnyard.co"
+    }
+  ]
+}
