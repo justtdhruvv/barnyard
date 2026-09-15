@@ -85,6 +85,29 @@ html[data-motion="on"] .drawing[data-pending] .ln { visibility: hidden; animatio
 .site-footer nav a, .rooms-nav a { display: inline-flex; align-items: center; min-height: 44px; }
 .site-menu a { display: flex; align-items: center; min-height: 56px; }
 
+/* the day and night switch */
+.site-actions { display: flex; align-items: center; gap: 6px; position: relative; z-index: 2; }
+.regime-switch { width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color 300ms var(--ease-pen); }
+.regime-switch:hover { background: color-mix(in oklch, var(--ink) 8%, transparent); }
+.regime-switch:active { transform: scale(0.94); }
+.regime-switch svg { overflow: visible; }
+.regime-switch path, .regime-switch circle { fill: none; stroke: currentColor; stroke-width: 1.3; stroke-linecap: round; stroke-linejoin: round; }
+.regime-switch g { transform-origin: 12px 12px; transition: opacity 500ms var(--ease-pen), transform 700ms var(--ease-pen); opacity: 0; transform: rotate(-60deg) scale(0.6); }
+.regime-switch g.is-on { opacity: 1; transform: none; }
+html[data-regime="night"] .regime-switch .rs-moon path { stroke: var(--lamp); }
+
+/* while the house flips: the ground crossfades and the lamps come on one after another */
+html.regime-flip body, html.regime-flip .site-header, html.regime-flip .site-menu, html.regime-flip .btn, html.regime-flip .view-option, html.regime-flip .wipe-drawing, html.regime-flip .sheet-toggle { transition: background-color 700ms var(--ease-pen), color 700ms var(--ease-pen), border-color 700ms var(--ease-pen); }
+html.regime-flip :is(.drawing, .house) path, html.regime-flip .house text { transition: stroke 700ms var(--ease-pen), fill 700ms var(--ease-pen); }
+html.regime-flip .layer-lamp path, html.regime-flip .vignette path.v-lamp { transition: stroke 450ms var(--ease-pen); }
+html.regime-flip .layer-lamp path:nth-child(5n+2), html.regime-flip .vignette path.v-lamp:nth-of-type(5n+2) { transition-delay: 120ms; }
+html.regime-flip .layer-lamp path:nth-child(5n+3), html.regime-flip .vignette path.v-lamp:nth-of-type(5n+3) { transition-delay: 240ms; }
+html.regime-flip .layer-lamp path:nth-child(5n+4), html.regime-flip .vignette path.v-lamp:nth-of-type(5n+4) { transition-delay: 360ms; }
+html.regime-flip .layer-lamp path:nth-child(5n), html.regime-flip .vignette path.v-lamp:nth-of-type(5n) { transition-delay: 480ms; }
+html.regime-flip .glow { transition: opacity 600ms var(--ease-pen); }
+html.regime-flip .glow:nth-of-type(2n) { transition-delay: 200ms; }
+html.regime-flip .glow:nth-of-type(3n) { transition-delay: 400ms; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; transition-duration: 150ms !important; }
 }
