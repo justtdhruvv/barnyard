@@ -134,7 +134,10 @@ export function House() {
     if (tilting) { setTilting(false); return; }
     const DOE = (window as unknown as { DeviceOrientationEvent?: { requestPermission?: () => Promise<string> } }).DeviceOrientationEvent;
     if (DOE && typeof DOE.requestPermission === "function") {
-      try { if ((await DOE.requestPermission()) !== "granted") return; } catch { return; }
+      let answer = "denied";
+      try { answer = await DOE.requestPermission(); } catch { answer = "denied"; }
+      // never leave a control that does nothing: if the phone says no, the button goes away
+      if (answer !== "granted") { setCanTilt(false); return; }
     }
     setTilting(true);
   };
