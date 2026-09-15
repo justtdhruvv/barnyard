@@ -1,0 +1,31 @@
+.house-wrap { position: relative; margin-inline: auto; width: 100%; }
+.house { display: block; width: 100%; height: auto; overflow: visible; }
+.house-d { display: none; }
+@media (min-width: 48rem) {
+  .house-m { display: none; }
+  .house-d { display: block; }
+  .house-wrap { max-width: min(100%, calc((100svh - 150px) * 1000 / 924)); }
+}
+
+.house path, .house circle.ln { fill: none; stroke: var(--ink); stroke-width: var(--line-w); stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.house .hair { stroke: var(--hair); stroke-width: 1px; }
+.house text { font-family: var(--font-display); fill: var(--ink-2); font-weight: 460; }
+.house .pane-label { fill: var(--ink); font-weight: 480; transition: fill 300ms var(--ease-pen); }
+.house .pane-hit { fill: transparent; stroke: none; }
+.house .pane-frame { fill: none; stroke: transparent; stroke-width: 1px; vector-effect: non-scaling-stroke; transition: stroke 300ms var(--ease-pen); }
+.house .pane:hover .pane-frame, .house .pane:focus-visible .pane-frame { stroke: var(--pen); }
+.house .pane:hover .pane-label, .house .pane:focus-visible .pane-label { fill: var(--pen); }
+.house .pane:focus { outline: none; }
+.house .vignette path.v { stroke-width: 0.9px; stroke: color-mix(in oklch, var(--ink) 78%, var(--paper)); }
+.house .vignette path.v-lamp { stroke: var(--ink); }
+html[data-regime="night"] .house .vignette path.v-lamp { stroke: var(--lamp); }
+.house .vignette .glow { opacity: calc(var(--glow) * 0.7); }
+
+.house-sun .sun-glow { opacity: 0; transition: opacity 600ms var(--ease-pen); }
+.house-sun.is-lamp .sun-glow { opacity: 1; }
+.house-sun.is-lamp .sun-disc { stroke: var(--lamp); fill: color-mix(in oklch, var(--lamp) 35%, transparent); }
+.house-sun.is-lamp .sun-ray { stroke: var(--lamp); opacity: 0.5; }
+
+.house-wrap[data-arriving] .pane { pointer-events: none; }
+/* until the arrival starts (or is skipped), hold the house back; CSS shows it anyway after 2.5 s */
+html[data-motion="on"] .house-wrap:not([data-done]):not([data-arriving]) .house > * { visibility: hidden; animation: pen-fallback 0s 2.5s forwards; }

@@ -1,6 +1,6 @@
 # The Barnyard Co. — "The drawn house" (design option three of three)
 
-A pitch demo for The Barnyard Co., a 10,000 sq ft design-led café in Chandkheda, Ahmedabad. This folder builds one of three alternative designs the studio will show the owner. The whole site is drawn in the thin, precise, single-weight line of the café's own logo: an illustrated house you tap into room by room, with line drawings traced from the café's real photographs and reels, people rotoscoped in the same line, lamps that switch on at night. The bar is a 9/10 from a critic who knows architecture, film, photography, illustration and interiors.
+A pitch demo for The Barnyard Co., a 10,000 sq ft design-led café in Chandkheda, Ahmedabad. This folder builds one of three alternative designs the studio will show the owner. The whole site is drawn in the thin, precise, single-weight line of the café's own logo: the logo draws itself and opens into the house; every room is a line drawing constructed in code over the café's own photographs; life is drawn with the logo's glyphs (steam, sun, lamps, a rolling cue ball, the BOWL bulbs); holding a drawing lifts it like tracing paper to show the photograph beneath. The bar is a 9/10 from a critic who knows architecture, film, photography, illustration and interiors.
 
 ## Read before doing anything, in this order
 
@@ -13,8 +13,8 @@ A pitch demo for The Barnyard Co., a 10,000 sq ft design-led café in Chandkheda
 ## Hard rules
 
 - **Nothing invented.** Facts come only from `content/cafe.json`. `UNKNOWN` and `CONFIRM` values never render. No capacities, prices, lane counts, testimonials, floor plans or room adjacencies. Drawings show only what the café's own photographs and reels show, or objects `cafe.json` documents. If you need a fact you do not have, add it to `docs/OPEN-QUESTIONS.md` and design around its absence.
-- **Every drawing is traced from the café's own Instagram material** (or drawn from documented geometry such as the logo's arch), and every drawing records its source still or reel in `content/drawings.json`. Photographs themselves appear only at honest size (never beyond 1.25x source pixels on device pixels) and are credited by handle from `content/media.json`.
-- **The line must look authored:** sparse, single weight, round caps, no noisy edge-detection texture. If a traced drawing looks like a filter, it does not ship.
+- **Every drawing is constructed in code over one of the café's own photographs** (or, where no photograph exists, from objects `cafe.json` documents), and records its source still and credit in `content/drawings.json`. Automatic traces are placement guides only and never ship: the spike (`docs/research/spikes/lineart.md`) showed they read as edge detection, not drawing. No faces, no crowds, no invented people. Photographs appear only at honest size (never beyond 1.25x source pixels on device pixels) and are credited by handle from `content/media.json`.
+- **The line must look authored:** single weight, round caps and joins, true arcs and straight lines in the logo's grammar, no fragments, no scribble. A drawing that does not read at 390 px is simplified, not shrunk.
 - **Mobile first.** Check every change at 390 px wide before desktop.
 - **Reduced motion:** every drawing is present and complete at rest; no draw-on, no loops.
 - No `localStorage` or `sessionStorage`. No backend. Enquiries compose a WhatsApp message to the café.
@@ -25,7 +25,8 @@ A pitch demo for The Barnyard Co., a 10,000 sq ft design-led café in Chandkheda
 
 - `content/cafe.json`, `content/media.json` — copied from option one (`D:\barnyard\content`). That repo is the source of truth for facts; if a fact changes there, copy it here.
 - `D:\barnyard-source\ig\` — read-only Instagram sources: `stills/`, `raw/` (press carousel photos), `reels/` (mp4), `crops/`. Never edit this folder; generated files go in this repo.
-- `D:\barnyard-source\spikes\lineart\` — the feasibility spike that proved the tracing pipeline; its scripts are the starting point for `scripts/trace/`.
+- `D:\barnyard-source\spikes\lineart\` — the tracing spike; its scripts and models produce the guide layers (`scripts/b-onnx.mjs`, `scripts/c-sed.py`, `scripts/combine.mjs`, `scripts/vectorize.mjs`, `scripts/run.mjs`, models in `models/`, Python deps in `pydeps/`). Read its `REPORT.md` first.
+- `D:\barnyard-source\spikes\drawn-stack\` — the verified GSAP, SVG and Next 15 stack spike; `REPORT.md` there (also in `docs/research/spikes/drawn-stack.md`).
 - `D:\barnyard-source\processed-v1\` — option one's processed stills, useful for crops that avoid baked-in captions.
 - `docs/reference/barnyard-v1/` — option one's code to port: `lib/daylight.ts` (clock-driven day and night), `lib/cafe.ts` (the `fact()` guard and helpers), `lib/mark.ts` (the traced logo geometry), `lib/media.ts`, `scripts/build-media.mjs` (caption-free crop coordinates), `scripts/check-content.mjs`.
 - `assets/brand/` — the logo (320 px JPG) and its traced SVG. Its line is the reference for every drawing on the site.

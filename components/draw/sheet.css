@@ -1,0 +1,12 @@
+.sheet { margin: 0; display: grid; gap: 14px; }
+.sheet-box { position: relative; width: 100%; touch-action: pan-y; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.sheet-photo, .sheet-drawing { position: absolute; inset: 0; width: 100%; height: 100%; transform-origin: top center; transition: opacity 600ms var(--ease-pen), transform 600ms var(--ease-pen); }
+.sheet-photo { object-fit: fill; opacity: 0; display: block; }
+.sheet-drawing .drawing { width: 100%; height: 100%; }
+.sheet.is-lifted .sheet-photo { opacity: 1; transform: scale(var(--lift-scale, 1)); }
+.sheet.is-lifted .sheet-drawing { opacity: 0.12; transform: scale(var(--lift-scale, 1)); }
+.sheet-caption { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; }
+.sheet-toggle { min-height: 44px; padding: 0 18px; border-radius: 22px; border: 1px solid var(--ink); background: transparent; color: var(--ink); font: inherit; font-weight: 500; cursor: pointer; transition: background-color 300ms var(--ease-pen), color 300ms var(--ease-pen); }
+.sheet-toggle[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.sheet-credit { color: var(--ink-2); }
+@media (prefers-reduced-motion: reduce) { .sheet-photo, .sheet-drawing { transition: opacity 150ms linear; } }

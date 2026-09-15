@@ -1,0 +1,32 @@
+{
+  "facade": {
+    "src": "/photos/facade.jpg",
+    "width": 1080,
+    "height": 1000,
+    "sourceWidth": 1080
+  },
+  "entry": {
+    "src": "/photos/entry.jpg",
+    "width": 720,
+    "height": 1200,
+    "sourceWidth": 720
+  },
+  "main-floor": {
+    "src": "/photos/main-floor.jpg",
+    "width": 830,
+    "height": 625,
+    "sourceWidth": 830
+  },
+  "mezzanine-stair": {
+    "src": "/photos/mezzanine-stair.jpg",
+    "width": 656,
+    "height": 982,
+    "sourceWidth": 656
+  },
+  "courtyard": {
+    "src": "/photos/courtyard.jpg",
+    "width": 720,
+    "height": 1120,
+    "sourceWidth": 720
+  }
+}
