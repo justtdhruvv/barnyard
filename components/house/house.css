@@ -27,5 +27,13 @@ html[data-regime="night"] .house .vignette path.v-lamp { stroke: var(--lamp); }
 .house-sun.is-lamp .sun-ray { stroke: var(--lamp); opacity: 0; }
 
 .house-wrap[data-arriving] .pane { pointer-events: none; }
+
+/* the pane flying into its room */
+.flight { position: fixed; z-index: 60; background: var(--paper); box-shadow: 0 0 0 1px var(--ink); transform-origin: 0 0; pointer-events: none; overflow: hidden; will-change: transform; }
+.flight-vignette { position: absolute; left: 3%; top: 14%; width: 94%; height: 83%; }
+.flight path { fill: none; stroke: color-mix(in oklch, var(--ink) 78%, var(--paper)); stroke-width: 0.9px; vector-effect: non-scaling-stroke; stroke-linecap: round; stroke-linejoin: round; }
+.flight path.v-lamp { stroke: var(--ink); }
+html[data-regime="night"] .flight path.v-lamp { stroke: var(--lamp); }
+.flight .glow { opacity: calc(var(--glow) * 0.7); }
 /* until the arrival starts (or is skipped), hold the house back; CSS shows it anyway after 2.5 s */
 html[data-motion="on"] .house-wrap:not([data-done]):not([data-arriving]) .house > * { visibility: hidden; animation: pen-fallback 0s 2.5s forwards; }

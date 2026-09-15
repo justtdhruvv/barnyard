@@ -7,6 +7,8 @@ import type { Drawing } from "@/lib/draw/types";
 import { archPath, houseGeometry, sunOnArch, VIGNETTES, type HouseGeometry } from "@/lib/house";
 import { loadGsap, motionAllowed } from "@/lib/motion/gsap";
 import { nowHour, parseAt, stateFor } from "@/lib/daylight";
+import { useRouter } from "next/navigation";
+import { flyToRoom } from "./flight";
 import { useLight } from "@/components/light/LightProvider";
 import { MARK_SUN, MARK_RAYS } from "./markParts";
 import "./house.css";
@@ -23,7 +25,7 @@ function vignetteOf(slug: keyof typeof VIGNETTES, id: string): { d: Drawing | nu
   return { d, vb: v ? v.join(" ") : `${d.x ?? 0} ${d.y ?? 0} ${d.width} ${d.height}` };
 }
 
-function Variant({ g, variant, clockT, night }: { g: HouseGeometry; variant: "m" | "d"; clockT: number; night: boolean }) {
+function Variant({ g, variant, clockT, night, onPane }: { g: HouseGeometry; variant: "m" | "d"; clockT: number; night: boolean; onPane: (e: React.MouseEvent<Element>, slug: string) => void }) {
   const mark = markDrawing();
   const sun = sunOnArch(clockT, g);
   const fs = variant === "m" ? 12.5 : 17;
@@ -48,7 +50,7 @@ function Variant({ g, variant, clockT, night }: { g: HouseGeometry; variant: "m"
         {g.panes.map((p) => {
           const { d, vb } = vignetteOf(p.slug, p.drawing);
           return (
-            <a key={p.slug} href={`/spaces#${p.slug}`} className="pane" aria-label={p.name}>
+            <a key={p.slug} href={`/spaces#${p.slug}`} className="pane" aria-label={p.name} onClick={(e) => onPane(e, p.slug)}>
               <rect className="pane-hit" x={p.x} y={p.y} width={p.w} height={p.h} />
               <rect className="pane-frame" x={p.x + 5} y={p.y + 5} width={p.w - 10} height={p.h - 10} />
               {d ? (
@@ -92,6 +94,19 @@ export function House() {
   const clockT = state?.clockT ?? 0.2;
   const night = state?.regime === "night";
   const root = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const flying = useRef(false);
+
+  useEffect(() => { router.prefetch("/spaces"); }, [router]);
+
+  // a plain tap flies into the room; modified clicks, keyboard activation and reduced motion navigate as a normal link
+  const onPane = (e: React.MouseEvent<Element>, slug: string) => {
+    if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.detail === 0 || !motionAllowed()) return;
+    e.preventDefault();
+    if (flying.current) return;
+    flying.current = true;
+    flyToRoom(e.currentTarget as unknown as SVGAElement, slug, (href) => router.push(href, { scroll: false }));
+  };
 
   useEffect(() => {
     const el = root.current;
@@ -203,8 +218,8 @@ export function House() {
 
   return (
     <div ref={root} className="house-wrap">
-      <Variant g={MOBILE} variant="m" clockT={clockT} night={night} />
-      <Variant g={DESKTOP} variant="d" clockT={clockT} night={night} />
+      <Variant g={MOBILE} variant="m" clockT={clockT} night={night} onPane={onPane} />
+      <Variant g={DESKTOP} variant="d" clockT={clockT} night={night} onPane={onPane} />
     </div>
   );
 }
