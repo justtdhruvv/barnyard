@@ -71,14 +71,19 @@ export function mezzanineStairDrawing(): Drawing {
   S(line([345, 700], [726, 700]), line([352, 720], [726, 720]));
   S(line([415, 678], [570, 678], "detail"), line([420, 690], [572, 690], "detail"), rect(440, 664, 52, 28, "detail"), rect(500, 664, 54, 28, "detail"), line([660, 678], [726, 678], "detail"), line([664, 690], [726, 690], "detail"));
 
-  // Front table: top, pedestal, foot.
-  S(polyline([[478, 745], [676, 738], [720, 766], [540, 788]], "detail", true), line([584, 788], [584, 886], "detail"), line([596, 787], [596, 886], "detail"), ellipse([590, 898], 64, 14, "detail"));
+  // Front table: top, pedestal, foot. Drawn whole: a top in perspective, one pedestal, one foot.
+  S(polyline([[478, 748], [668, 740], [706, 768], [512, 780]], "detail", true), line([584, 777], [584, 884], "detail"), line([598, 776], [598, 884], "detail"), ellipse([591, 894], 56, 11, "detail"));
 
-  // Cane chairs around it.
-  S(curve([[430, 764], [470, 748], [516, 756]], "detail"), line([433, 766], [452, 832], "detail"), line([514, 758], [526, 818], "detail"));
-  S(polyline([[444, 832], [540, 822], [562, 846], [458, 860]], "detail", true), line([458, 860], [438, 985], "detail"), line([560, 846], [556, 985], "detail"), line([444, 832], [436, 905], "detail"));
-  S(curve([[640, 752], [690, 740], [726, 750]], "detail"), line([648, 756], [664, 830], "detail"), polyline([[664, 830], [726, 824]], "detail"));
-  S(curve([[636, 884], [676, 852], [726, 858]], "detail"), polyline([[650, 930], [726, 912]], "detail"), line([652, 930], [628, 1030], "detail"), line([640, 890], [652, 930], "detail"));
+  // Cane chairs, each whole: a seat, two legs, and one arc for the back.
+  const caneChair = (x: number, y: number, w: number): Stroke[] => [
+    polyline([[x, y], [x + w, y - 8], [x + w + 12, y + 12], [x + 10, y + 20]], "detail", true),
+    line([x + 10, y + 20], [x + 6, y + 112], "detail"),
+    line([x + w + 12, y + 12], [x + w + 10, y + 104], "detail"),
+    curve([[x, y], [x - 4, y - 46], [x + w * 0.5, y - 72], [x + w + 4, y - 50], [x + w, y - 8]], "detail"),
+  ];
+  // one behind the table: only its back shows above the top
+  S(curve([[626, 744], [630, 710], [664, 698], [696, 712], [700, 752]], "detail"));
+  S(...caneChair(418, 872, 88), ...caneChair(612, 912, 84));
 
   // The plant rising beside the stair, and the one over the mezzanine rail.
   const leaves: [number, number, number, number][] = [[356, 700, 80, -60], [356, 700, 66, -86], [356, 700, 72, -34], [350, 700, 50, -104], [236, 228, 44, -62], [236, 228, 38, -104]];

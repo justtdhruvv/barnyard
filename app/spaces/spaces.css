@@ -5,7 +5,7 @@
 .room-sheet { width: 100%; max-width: 560px; }
 @media (min-width: 48rem) {
   .room { grid-template-columns: 5fr 7fr; gap: 64px; padding-block: 88px; }
-  .room-words { position: sticky; top: 96px; }
+  .room-words { position: sticky; top: 96px; align-self: start; }
   .room-sheet { justify-self: end; }
 }
 .chase .layer-lamp path[data-id^="bulb-"] { animation: bulb-chase 1.2s steps(1, end) infinite; }

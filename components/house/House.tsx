@@ -178,8 +178,10 @@ export function House() {
         },
       }, 1.2);
       tl.to(markParts, { opacity: 0, duration: 0.3, ease: "power1.out" }, 1.2);
-      tl.fromTo(sunMarkParts, { opacity: 1 }, { opacity: 0, duration: 0.2 }, 1.55);
-      tl.fromTo(sunG, { opacity: 0, x: sunStart[0], y: sunStart[1], scale: sunScale, svgOrigin: "0 0" }, { opacity: 1, x: sunEnd.cx, y: sunEnd.cy, scale: 1, duration: 0.75 }, 1.2);
+      // the mark's sun goes with the rest of the mark; the house's sun appears only once it is in the arch head
+      tl.fromTo(sunMarkParts, { opacity: 1 }, { opacity: 0, duration: 0.3 }, 1.2);
+      void sunStart; void sunScale; void sunEnd;
+      tl.fromTo(sunG, { opacity: 0 }, { opacity: 1, duration: 0.4 }, 1.8);
       tl.to(lineEls.slice(3), { opacity: 1, duration: 0.3 }, 1.7);
       tl.to(track, { opacity: 1, duration: 0.4 }, 1.8);
       // 3. the rooms appear, one pane after another (1.75 to 2.35 s)
