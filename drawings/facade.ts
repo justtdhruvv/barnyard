@@ -1,237 +1,286 @@
-import { frameOf, metaFor } from "@/lib/drawings";
-import { bulb, leaf } from "@/lib/draw/glyphs";
+import { leaf, vine } from "@/lib/draw/glyphs";
 import { circle, curve, line, n, polyline } from "@/lib/draw/primitives";
-import type { Drawing, Glow, Layer, P, Stroke } from "@/lib/draw/types";
+import type { Drawing, Glow, P, Stroke } from "@/lib/draw/types";
+import { frameOf, metaFor } from "@/lib/drawings";
 import { ARCH_PATH, DIVIDER_PATHS, DROPS, HOUSE_PATHS, PLANT_PATHS, STEAM_PATHS, SUN_CENTER, SUN_RADIUS, SUN_RAYS, WINDOW_PATHS } from "@/lib/mark";
 
-/** An affine map from the mark's 320 box onto the skewed plate. */
-type Affine = (p: P) => P;
+/*
+ * The facade, drawn from stills/sign-corten.jpg (measured in its 1080 x 1920 frame; the drawing is the crop 0 0 1080 1000).
+ * We stand below and to the right of the corten plate and look up, so its top edge falls more steeply than its
+ * bottom edge and the lettering grows towards the creepers. The plate's right end runs under the creepers and is
+ * not drawn; the Instagram caption below y 1000 is outside the frame.
+ */
 
-function affineFrom(origin: P, u: P, v: P, markOrigin: P): Affine {
-  return ([x, y]) => {
-    const dx = x - markOrigin[0];
-    const dy = y - markOrigin[1];
-    return [origin[0] + u[0] * dx + v[0] * dy, origin[1] + u[1] * dx + v[1] * dy];
-  };
+// ---------- structure: the concrete slab and the corten plate ----------
+const SLAB_TOP_LEFT: P = [147, 497];
+const SLAB_APEX: P = [692, 42]; // the slab's right arris is hidden by the creepers from here down
+const SLAB_LEFT_AT_PLATE: P = [131, 590]; // the slab's left edge meets the plate's corner here
+const PLATE_LEFT_FOOT: P = [77, 1000]; // the plate's left edge leaves the frame
+const PLATE_TOP_LEFT: P = [139, 600];
+const PLATE_TOP_UNDER_CREEPERS: P = [545, 302];
+const PLATE_BOTTOM_FOOT: P = [189, 1000];
+const PLATE_BOTTOM_UNDER_CREEPERS: P = [590, 843];
+const PLATE_UNDERSIDE: [P, P] = [[326, 1000], [590, 915]]; // the plate stands off the wall; its underside shows
+
+// ---------- detail: the string-light wire ----------
+const WIRE: P[] = [[0, 336], [50, 345], [98, 364], [115, 400], [134, 432], [152, 444], [192, 448], [230, 416], [264, 394]];
+const DROPS_FROM_WIRE: { knot: P; socket: P; w: number; h: number }[] = [
+  { knot: [50, 346], socket: [48, 379], w: 23, h: 45 },
+  { knot: [151, 444], socket: [139, 477], w: 20, h: 44 },
+];
+
+// ---------- lamp: the lit mark, placed by an affine fitted to the logo's own light ----------
+/**
+ * Three points of the mark (320 frame: the arch's two feet and the top of its head) and where they land on the plate.
+ * Fitted by least squares to the lit strokes, weighted to the arch: under 1 unit on the arch, about 4 on the dividers
+ * and the house, where the sign's own proportions differ slightly from lib/mark.ts.
+ */
+const LOGO_FIT: { mark: [P, P, P]; photo: [P, P, P] } = {
+  mark: [[55, 265], [265, 265], [160, 55]],
+  photo: [[199, 832], [389, 728], [332, 514]],
+};
+
+// ---------- lamp: the lettering, THE BARNYARD CO, in single-line capitals on the plate ----------
+const BASELINE_ORIGIN: P = [104, 976]; // the foot of the T
+const BASELINE_END: P = [575, 770]; // the feet of the letters, projected on towards the O
+/** Each word's extent along the baseline (frame units from BASELINE_ORIGIN) and its cap height square to the baseline at each end. */
+const WORDS: { text: string; from: number; to: number; cap: [number, number] }[] = [
+  { text: "THE", from: 0, to: 46, cap: [24, 25] },
+  { text: "BARNYARD", from: 66, to: 388, cap: [45, 54] },
+  { text: "CO", from: 410, to: 498, cap: [50, 52] },
+];
+/** The plate's verticals lean: x per unit of y at the start and the end of the lettering (they converge upwards). */
+const LEAN: [number, number] = [-0.15, -0.02];
+const LETTER_GAP = 14;
+/** Single-line capitals in a 100-unit cap box: baseline y 0, cap line y -100; straight lines and true arcs only. */
+const GLYPHS: Record<string, { w: number; d: string }> = {
+  T: { w: 64, d: "M0 -100L64 -100M32 -100L32 0" },
+  H: { w: 64, d: "M0 -100L0 0M64 -100L64 0M0 -52L64 -52" },
+  E: { w: 54, d: "M54 -100L0 -100L0 0L54 0M0 -52L44 -52" },
+  B: { w: 58, d: "M0 0L0 -100L32 -100A24 24 0 0 1 32 -52L0 -52M32 -52A26 26 0 0 1 32 0L0 0" },
+  A: { w: 70, d: "M0 0L35 -100L70 0M13 -36L57 -36" },
+  R: { w: 60, d: "M0 0L0 -100L32 -100A24 24 0 0 1 32 -52L0 -52M28 -52L60 0" },
+  N: { w: 66, d: "M0 0L0 -100L66 0L66 -100" },
+  Y: { w: 68, d: "M0 -100L34 -48L68 -100M34 -48L34 0" },
+  D: { w: 66, d: "M0 0L0 -100L16 -100A50 50 0 0 1 16 0Z" },
+  C: { w: 85, d: "M85.4 -85.4A50 50 0 1 0 85.4 -14.6" },
+  O: { w: 100, d: "M100 -50A50 50 0 1 1 0 -50A50 50 0 1 1 100 -50" },
+};
+
+// ---------- life: creepers falling over the slab ----------
+/** Creepers riding the plate's top edge and the slab's top edge: their stems lie on those edges, so only the leaves add. */
+const PLATE_EDGE_VINE: { from: number; to: number } = { from: 0.47, to: 1 }; // fractions along PLATE_TOP_LEFT → PLATE_TOP_UNDER_CREEPERS
+const SLAB_EDGE_VINE: { from: number; to: number } = { from: 0.72, to: 0.995 }; // fractions along SLAB_TOP_LEFT → SLAB_APEX
+/** The top of the creeper mass, from the apex until it leaves the frame. */
+const CANOPY_TOP: P[] = [[692, 44], [760, 50], [822, 44], [872, 22], [902, 4]];
+/** Hanging strands, measured where they end in the photo (some stop short over the dark gap near x 780). */
+const STRANDS: { path: P[]; leaves: number }[] = [
+  { path: [[512, 330], [506, 480], [500, 640], [492, 800], [488, 930]], leaves: 9 },
+  { path: [[548, 300], [552, 520], [544, 760], [536, 972]], leaves: 11 },
+  { path: [[596, 160], [600, 420], [593, 700], [588, 972]], leaves: 12 },
+  { path: [[640, 110], [646, 330], [641, 560], [634, 800]], leaves: 9 },
+  { path: [[684, 52], [690, 300], [696, 620], [700, 972]], leaves: 13 },
+  { path: [[742, 50], [747, 270], [750, 500], [748, 760]], leaves: 9 },
+  { path: [[792, 48], [796, 240], [798, 430], [793, 620]], leaves: 7 },
+  { path: [[852, 34], [858, 300], [864, 640], [866, 972]], leaves: 13 },
+  { path: [[912, 6], [916, 260], [921, 540], [924, 840]], leaves: 11 },
+  { path: [[968, 6], [972, 300], [978, 640], [982, 972]], leaves: 13 },
+  { path: [[1036, 6], [1040, 280], [1046, 600], [1050, 972]], leaves: 13 },
+];
+const HEDGE: P[] = [[34, 640], [44, 760], [36, 880], [48, 975]];
+const VINE_LEAF = 22;
+/** Leaves that sway (at most 12): the free ends of the strands, where the air moves them. */
+const SWAYING: { base: P; length: number; angle: number }[] = [
+  { base: [488, 930], length: 24, angle: 100 },
+  { base: [536, 972], length: 22, angle: 76 },
+  { base: [588, 972], length: 22, angle: 104 },
+  { base: [634, 800], length: 24, angle: 80 },
+  { base: [700, 972], length: 22, angle: 102 },
+  { base: [748, 760], length: 24, angle: 78 },
+  { base: [793, 620], length: 24, angle: 98 },
+  { base: [866, 972], length: 22, angle: 76 },
+  { base: [924, 840], length: 24, angle: 104 },
+  { base: [982, 972], length: 22, angle: 80 },
+  { base: [1050, 972], length: 22, angle: 100 },
+  { base: [48, 975], length: 20, angle: 70 },
+];
+
+// ---------- glows (night only) ----------
+const LOGO_GLOW_RADIUS = 140;
+const BULB_GLOW_RADIUS = 56;
+
+/** An affine map in SVG matrix order [a, b, c, d, e, f]: x' = a·x + c·y + e, y' = b·x + d·y + f. */
+export type Affine = [number, number, number, number, number, number];
+
+export function applyAffine(m: Affine, [x, y]: P): P {
+  return [m[0] * x + m[2] * y + m[4], m[1] * x + m[3] * y + m[5]];
 }
 
-const pt = (p: P) => `${n(p[0])} ${n(p[1])}`;
+/** The affine that carries three source points exactly onto three target points. */
+export function affineFrom(src: [P, P, P], dst: [P, P, P]): Affine {
+  const [[x0, y0], [x1, y1], [x2, y2]] = src;
+  const det = x0 * (y1 - y2) - y0 * (x1 - x2) + (x1 * y2 - x2 * y1);
+  if (Math.abs(det) < 1e-9) throw new Error("affineFrom: source points are collinear");
+  const solve = (t0: number, t1: number, t2: number): [number, number, number] => [
+    (t0 * (y1 - y2) - y0 * (t1 - t2) + (t1 * y2 - t2 * y1)) / det,
+    (x0 * (t1 - t2) - t0 * (x1 - x2) + (x1 * t2 - x2 * t1)) / det,
+    (x0 * (y1 * t2 - y2 * t1) - y0 * (x1 * t2 - x2 * t1) + t0 * (x1 * y2 - x2 * y1)) / det,
+  ];
+  const [a, c, e] = solve(dst[0][0], dst[1][0], dst[2][0]);
+  const [b, d, f] = solve(dst[0][1], dst[1][1], dst[2][1]);
+  return [a, b, c, d, e, f];
+}
 
-/** Circular arc from a to b as cubic Béziers (exact under an affine map), SVG arc flags. */
-function arcToCubics(a: P, b: P, r: number, large: number, sweep: number): P[][] {
-  const mx = (a[0] + b[0]) / 2;
-  const my = (a[1] + b[1]) / 2;
-  const hx = (b[0] - a[0]) / 2;
-  const hy = (b[1] - a[1]) / 2;
-  const d = Math.hypot(hx, hy);
-  const rr = Math.max(r, d);
-  const h = Math.sqrt(Math.max(0, rr * rr - d * d));
-  const sign = large === sweep ? -1 : 1;
-  const ux = d ? -hy / d : 0;
-  const uy = d ? hx / d : 0;
-  const c: P = [mx + sign * h * ux, my + sign * h * uy];
-  let t0 = Math.atan2(a[1] - c[1], a[0] - c[0]);
-  let t1 = Math.atan2(b[1] - c[1], b[0] - c[0]);
-  if (sweep && t1 < t0) t1 += Math.PI * 2;
-  if (!sweep && t1 > t0) t1 -= Math.PI * 2;
-  const segs = Math.max(1, Math.ceil(Math.abs(t1 - t0) / (Math.PI / 2) - 1e-9));
-  const step = (t1 - t0) / segs;
-  const k = (4 / 3) * Math.tan(step / 4);
-  const out: P[][] = [];
-  for (let i = 0; i < segs; i++) {
-    const s = t0 + step * i;
-    const e = s + step;
-    const p0: P = [c[0] + rr * Math.cos(s), c[1] + rr * Math.sin(s)];
-    const p3: P = [c[0] + rr * Math.cos(e), c[1] + rr * Math.sin(e)];
-    const p1: P = [p0[0] - k * rr * Math.sin(s), p0[1] + k * rr * Math.cos(s)];
-    const p2: P = [p3[0] + k * rr * Math.sin(e), p3[1] - k * rr * Math.cos(e)];
-    out.push([p1, p2, p3]);
+const pt = ([x, y]: P) => `${n(x)} ${n(y)}`;
+const lerpP = (a: P, b: P, t: number): P => [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t];
+
+/** A circular or axis-aligned elliptical arc as cubic Béziers (at most 90° each), so it survives a shear. */
+function arcToCubics(p0: P, rx: number, ry: number, large: boolean, sweep: boolean, p1: P): [P, P, P][] {
+  const sy = ry / rx;
+  const a: P = [p0[0], p0[1] / sy];
+  const b: P = [p1[0], p1[1] / sy];
+  const mx = (a[0] - b[0]) / 2, my = (a[1] - b[1]) / 2;
+  const d2 = mx * mx + my * my;
+  if (d2 === 0) return [];
+  const r = Math.max(rx, Math.sqrt(d2));
+  const k = (large === sweep ? -1 : 1) * Math.sqrt(Math.max(0, (r * r - d2) / d2));
+  const c: P = [k * my + (a[0] + b[0]) / 2, -k * mx + (a[1] + b[1]) / 2];
+  const t1 = Math.atan2(a[1] - c[1], a[0] - c[0]);
+  let dt = Math.atan2(b[1] - c[1], b[0] - c[0]) - t1;
+  if (sweep && dt <= 0) dt += Math.PI * 2;
+  if (!sweep && dt >= 0) dt -= Math.PI * 2;
+  const parts = Math.max(1, Math.ceil(Math.abs(dt) / (Math.PI / 2) - 1e-9));
+  const step = dt / parts;
+  const h = (4 / 3) * Math.tan(step / 4) * r;
+  const back = ([x, y]: P): P => [x, y * sy];
+  const out: [P, P, P][] = [];
+  for (let i = 0; i < parts; i++) {
+    const s = t1 + step * i, e = s + step;
+    const q0: P = [c[0] + r * Math.cos(s), c[1] + r * Math.sin(s)];
+    const q3: P = [c[0] + r * Math.cos(e), c[1] + r * Math.sin(e)];
+    out.push([back([q0[0] - h * Math.sin(s), q0[1] + h * Math.cos(s)]), back([q3[0] + h * Math.sin(e), q3[1] - h * Math.cos(e)]), back(q3)]);
   }
+  out[out.length - 1][2] = p1;
   return out;
 }
 
-/** Map an SVG path (M, L, C, A with equal radii, Z; absolute) through the affine. */
-function mapPath(d: string, f: Affine): string {
-  const tok = d.match(/[MLCAZ]|-?\d*\.?\d+(?:e-?\d+)?/gi) ?? [];
+function transformPath(d: string, m: Affine): string {
+  const tokens = d.match(/[MLCAZ]|-?(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?/gi) ?? [];
   let i = 0;
   let cmd = "";
   let cur: P = [0, 0];
   let start: P = [0, 0];
   let out = "";
-  const num = () => Number(tok[i++]);
-  while (i < tok.length) {
-    if (/^[MLCAZ]$/i.test(tok[i])) cmd = tok[i++].toUpperCase();
-    if (cmd === "Z") {
-      out += "Z";
-      cur = start;
-      continue;
-    }
-    if (cmd === "M") {
-      cur = [num(), num()];
-      start = cur;
-      out += `M${pt(f(cur))}`;
-      cmd = "L";
-    } else if (cmd === "L") {
-      cur = [num(), num()];
-      out += `L${pt(f(cur))}`;
-    } else if (cmd === "C") {
-      const c1: P = [num(), num()];
-      const c2: P = [num(), num()];
-      cur = [num(), num()];
-      out += `C${pt(f(c1))} ${pt(f(c2))} ${pt(f(cur))}`;
-    } else if (cmd === "A") {
-      const r = num();
-      num();
-      num();
-      const large = num();
-      const sweep = num();
-      const to: P = [num(), num()];
-      for (const [c1, c2, e] of arcToCubics(cur, to, r, large, sweep)) out += `C${pt(f(c1))} ${pt(f(c2))} ${pt(f(e))}`;
-      cur = to;
-    } else {
-      i++;
-    }
+  const num = () => Number(tokens[i++]);
+  const at = (p: P) => pt(applyAffine(m, p));
+  while (i < tokens.length) {
+    if (/^[a-z]$/i.test(tokens[i])) cmd = tokens[i++];
+    if (cmd === "M") { cur = [num(), num()]; start = cur; out += `M${at(cur)}`; cmd = "L"; }
+    else if (cmd === "L") { cur = [num(), num()]; out += `L${at(cur)}`; }
+    else if (cmd === "C") { const c1: P = [num(), num()], c2: P = [num(), num()]; cur = [num(), num()]; out += `C${at(c1)} ${at(c2)} ${at(cur)}`; }
+    else if (cmd === "A") {
+      const rx = num(), ry = num(), rot = num(), large = num() === 1, sweep = num() === 1;
+      const end: P = [num(), num()];
+      if (rot !== 0) throw new Error("transformMark: rotated arcs are not supported");
+      for (const [c1, c2, p] of arcToCubics(cur, rx, ry, large, sweep, end)) out += `C${at(c1)} ${at(c2)} ${at(p)}`;
+      cur = end;
+    } else if (cmd === "Z") { out += "Z"; cur = start; }
+    else throw new Error(`transformMark: absolute M, L, C, A and Z only (got "${cmd}")`);
   }
   return out;
 }
 
-function mappedCircle(c: P, r: number, f: Affine, layer: Layer): Stroke {
-  const a: P = [c[0] + r, c[1]];
-  const b: P = [c[0] - r, c[1]];
-  return { d: mapPath(`M ${a[0]} ${a[1]} A ${r} ${r} 0 0 1 ${b[0]} ${b[1]} A ${r} ${r} 0 0 1 ${a[0]} ${a[1]}`, f), layer };
+/** Carries the mark's paths (or bare points) through an affine: lines stay lines, arcs become cubics, so a shear is exact. */
+export function transformMark(paths: string[], m: Affine): string[];
+export function transformMark(points: P[], m: Affine): P[];
+export function transformMark(input: string[] | P[], m: Affine): string[] | P[] {
+  if (input.length > 0 && typeof input[0] === "string") return (input as string[]).map((d) => transformPath(d, m));
+  return (input as P[]).map((p) => applyAffine(m, p));
 }
 
-/** A hanging creeper strand: a gently swaying stem with leaves alternating down it. */
-function strand(top: P, length: number, sway: number, leaves: number, leafLen: number, phase: number): { stem: Stroke; leaves: { base: P; angle: number; len: number }[] } {
-  const pts: P[] = Array.from({ length: 5 }, (_, k) => {
-    const t = k / 4;
-    return [top[0] + Math.sin((t * 1.6 + phase) * Math.PI) * sway, top[1] + t * length] as P;
-  });
-  const out: { base: P; angle: number; len: number }[] = [];
-  for (let k = 0; k < leaves; k++) {
-    const t = (k + 0.6) / (leaves + 0.2);
-    const base: P = [top[0] + Math.sin((t * 1.6 + phase) * Math.PI) * sway, top[1] + t * length];
-    const side = (k + Math.round(phase * 10)) % 2 ? 1 : -1;
-    out.push({ base, angle: 90 - side * 52, len: leafLen * (0.85 + ((k * 37) % 7) / 20) });
-  }
-  return { stem: curve(pts, "life"), leaves: out };
+/** An Edison bulb hanging from its socket: straight shoulders and a true arc for the glass. */
+function edison(socket: P, w: number, h: number): string {
+  const [x, y] = socket;
+  const r = w / 2;
+  const neck = w * 0.24;
+  return `M${pt([x - neck, y])}L${pt([x - r, y + h - r])}A${n(r)} ${n(r)} 0 0 0 ${pt([x + r, y + h - r])}L${pt([x + neck, y])}Z`;
 }
 
-/** Single-line capitals on a 100-high box (y down, baseline at 100). [path, width, x-compression]. */
-const GLYPHS: Record<string, [string, number, number]> = {
-  T: ["M 0 0 L 60 0 M 30 0 L 30 100", 60, 1],
-  H: ["M 0 0 L 0 100 M 60 0 L 60 100 M 0 50 L 60 50", 60, 1],
-  E: ["M 55 0 L 0 0 L 0 100 L 55 100 M 0 50 L 44 50", 55, 1],
-  B: ["M 0 100 L 0 0 L 32 0 A 25 25 0 0 1 32 50 L 0 50 M 32 50 A 25 25 0 0 1 32 100 L 0 100", 57, 1],
-  A: ["M 0 100 L 32 0 L 64 100 M 13 60 L 51 60", 64, 1],
-  R: ["M 0 100 L 0 0 L 32 0 A 25 25 0 0 1 32 50 L 0 50 M 28 50 L 58 100", 58, 1],
-  N: ["M 0 100 L 0 0 L 60 100 L 60 0", 60, 1],
-  Y: ["M 0 0 L 32 50 L 64 0 M 32 50 L 32 100", 64, 1],
-  D: ["M 0 0 L 0 100 L 20 100 A 50 50 0 0 0 20 0 Z", 70, 1],
-  C: ["M 85.4 14.6 A 50 50 0 1 0 85.4 85.4", 100, 0.72],
-  O: ["M 100 50 A 50 50 0 1 1 0 50 A 50 50 0 1 1 100 50", 100, 0.72],
-};
-
-/** Set a word along a rising baseline: `base` is the first letter's bottom-left, `u` one glyph unit along the baseline, `v` one glyph unit down the letter. */
-function word(text: string, base: P, u: P, v: P, gap: number, layer: Layer): Stroke[] {
+function lettering(): Stroke[] {
+  const len = Math.hypot(BASELINE_END[0] - BASELINE_ORIGIN[0], BASELINE_END[1] - BASELINE_ORIGIN[1]);
+  const u: P = [(BASELINE_END[0] - BASELINE_ORIGIN[0]) / len, (BASELINE_END[1] - BASELINE_ORIGIN[1]) / len];
+  const square: P = [-u[1], u[0]]; // square to the baseline, pointing down the plate
+  const span = WORDS[WORDS.length - 1].to;
   const out: Stroke[] = [];
-  let at = 0;
-  for (const ch of text) {
-    const g = GLYPHS[ch];
-    if (!g) continue;
-    const [d, w, xs] = g;
-    const o = at;
-    const f: Affine = ([x, y]) => [base[0] + u[0] * (o + x * xs) + v[0] * (y - 100), base[1] + u[1] * (o + x * xs) + v[1] * (y - 100)];
-    out.push({ d: mapPath(d, f), layer });
-    at += w * xs + gap;
+  for (const word of WORDS) {
+    const glyphs = [...word.text].map((ch) => GLYPHS[ch]);
+    const units = glyphs.reduce((s, g) => s + g.w, 0) + LETTER_GAP * (glyphs.length - 1);
+    const kx = (word.to - word.from) / units;
+    let cursor = 0;
+    for (const g of glyphs) {
+      const left = word.from + cursor * kx;
+      const mid = left + (g.w / 2) * kx;
+      const cap = word.cap[0] + (word.cap[1] - word.cap[0]) * ((mid - word.from) / (word.to - word.from));
+      const lean = LEAN[0] + (LEAN[1] - LEAN[0]) * (mid / span);
+      const vl = Math.hypot(lean, 1);
+      const vertical: P = [lean / vl, 1 / vl];
+      const tall = cap / (vertical[0] * square[0] + vertical[1] * square[1]);
+      const m: Affine = [u[0] * kx, u[1] * kx, (vertical[0] * tall) / 100, (vertical[1] * tall) / 100, BASELINE_ORIGIN[0] + u[0] * left, BASELINE_ORIGIN[1] + u[1] * left];
+      out.push({ d: transformMark([g.d], m)[0], layer: "lamp" });
+      cursor += g.w + LETTER_GAP;
+    }
   }
   return out;
 }
 
 export function facadeDrawing(): Drawing {
-  const strokes: Stroke[] = [];
-  const glows: Glow[] = [];
+  const logo = affineFrom(LOGO_FIT.mark, LOGO_FIT.photo);
+
+  const structure: Stroke[] = [
+    polyline([SLAB_LEFT_AT_PLATE, SLAB_TOP_LEFT, SLAB_APEX]),
+    polyline([PLATE_LEFT_FOOT, PLATE_TOP_LEFT, PLATE_TOP_UNDER_CREEPERS]),
+    line(PLATE_BOTTOM_FOOT, PLATE_BOTTOM_UNDER_CREEPERS),
+    line(PLATE_UNDERSIDE[0], PLATE_UNDERSIDE[1]),
+  ];
+
+  const detail: Stroke[] = [curve(WIRE, "detail"), ...DROPS_FROM_WIRE.map((b) => line(b.knot, b.socket, "detail"))];
+
+  const markPaths = [
+    ARCH_PATH,
+    ...DIVIDER_PATHS,
+    ...WINDOW_PATHS,
+    circle([SUN_CENTER.x, SUN_CENTER.y], SUN_RADIUS).d,
+    ...SUN_RAYS,
+    ...STEAM_PATHS,
+    ...PLANT_PATHS,
+    ...DROPS.map((p) => circle([p.x, p.y], p.r).d),
+    ...HOUSE_PATHS,
+  ];
+  const lamp: Stroke[] = [
+    ...DROPS_FROM_WIRE.map((b, i) => ({ d: edison(b.socket, b.w, b.h), layer: "lamp" as const, id: `bulb-${i}` })),
+    ...transformMark(markPaths, logo).map((d) => ({ d, layer: "lamp" as const })),
+    ...lettering(),
+  ];
+
+  const onEdge = (a: P, b: P, span: { from: number; to: number }): P[] => [span.from, (span.from + span.to) / 2, span.to].map((t) => lerpP(a, b, t));
+  const life: Stroke[] = [
+    ...vine(onEdge(PLATE_TOP_LEFT, PLATE_TOP_UNDER_CREEPERS, PLATE_EDGE_VINE), 6, 37, VINE_LEAF),
+    ...vine(onEdge(SLAB_TOP_LEFT, SLAB_APEX, SLAB_EDGE_VINE), 5, 38, VINE_LEAF),
+    ...vine(CANOPY_TOP, 5, 39, VINE_LEAF),
+    ...STRANDS.flatMap((s, i) => vine(s.path, s.leaves, 41 + i, VINE_LEAF)),
+    ...vine(HEDGE, 6, 60, VINE_LEAF),
+  ];
   const morphs: Record<string, string[]> = {};
-
-  // ---- the concrete wall: its top edge climbing to the corner, its far edge dropping behind the creepers
-  const wallA: P = [148, 449];
-  const wallB: P = [690, 68];
-  strokes.push(line(wallA, wallB));
-  strokes.push(line(wallB, [724, 1000]));
-  const wallTopAt = (x: number) => wallA[1] + ((wallB[1] - wallA[1]) * (x - wallA[0])) / (wallB[0] - wallA[0]);
-
-  // ---- the corten plate, a skewed quadrilateral with its bottom edge thickness
-  const TL: P = [148, 468];
-  const TR: P = [592, 305];
-  const BR: P = [602, 860];
-  const BL: P = [65, 1050];
-  strokes.push(polyline([TL, TR, BR, BL], "structure", true));
-  strokes.push(line([75, 1066], [606, 876], "structure"));
-
-  // ---- THE BARNYARD CO, single-line capitals rising with the plate
-  const slope = -0.449;
-  strokes.push(...word("THE", [102, 974], [0.24, 0.24 * slope], [-0.09, 0.33], 12, "detail"));
-  strokes.push(...word("BARNYARD", [165, 945], [0.484, 0.484 * slope], [-0.16, 0.53], 14, "detail"));
-  strokes.push(...word("CO", [474, 806], [0.42, 0.42 * slope], [-0.12, 0.42], 14, "detail"));
-
-  // ---- the mark on the plate, lamp-lit
-  const f = affineFrom([202, 822], [0.943, -0.476], [-0.2, 1.45], [55, 265]);
-  strokes.push(
-    { d: mapPath(ARCH_PATH, f), layer: "lamp", id: "mark-arch" },
-    ...DIVIDER_PATHS.map((d) => ({ d: mapPath(d, f), layer: "lamp" as const })),
-    ...WINDOW_PATHS.map((d) => ({ d: mapPath(d, f), layer: "lamp" as const })),
-    mappedCircle([SUN_CENTER.x, SUN_CENTER.y], SUN_RADIUS, f, "lamp"),
-    ...SUN_RAYS.map((d) => ({ d: mapPath(d, f), layer: "lamp" as const })),
-    ...STEAM_PATHS.map((d) => ({ d: mapPath(d, f), layer: "lamp" as const })),
-    ...PLANT_PATHS.map((d) => ({ d: mapPath(d, f), layer: "lamp" as const })),
-    ...DROPS.map((p) => mappedCircle([p.x, p.y], p.r + 0.5, f, "lamp")),
-    ...HOUSE_PATHS.map((d) => ({ d: mapPath(d, f), layer: "lamp" as const })),
-  );
-  glows.push({ x: 305, y: 650, r: 175 });
-
-  // ---- string lights: a sagging wire, two pendant bulbs
-  strokes.push(curve([[0, 330], [52, 348], [98, 410], [135, 452], [192, 428], [260, 395]], "detail"));
-  const pendants: [P, P][] = [
-    [[50, 350], [45, 392]],
-    [[133, 450], [137, 490]],
-  ];
-  pendants.forEach(([hang, c], k) => {
-    strokes.push(line(hang, [c[0], c[1] - 14], "detail"));
-    strokes.push({ ...bulb(c, 14), id: `bulb-${k}` });
-    glows.push({ x: c[0], y: c[1], r: 55 });
-  });
-  strokes.push(line([586, 36], [834, 0], "detail"));
-
-  // ---- the creepers, hanging from the wall's top edge and the green mass beyond the corner
-  const specs: [number, number, number, number, number][] = [
-    // x, bottom y, sway, leaves, phase
-    [500, 900, 10, 5, 0.1],
-    [556, 1000, 14, 6, 0.35],
-    [618, 880, 12, 5, 0.6],
-    [676, 700, 10, 4, 0.2],
-    [748, 1000, 16, 7, 0.5],
-    [822, 660, 12, 5, 0.8],
-    [888, 920, 14, 6, 0.3],
-    [956, 780, 12, 5, 0.7],
-    [1024, 1000, 16, 7, 0.15],
-    [1072, 560, 8, 4, 0.55],
-  ];
-  let nl = 0;
-  specs.forEach(([x, bottom, sway, count, phase]) => {
-    const top: P = [x, x < wallB[0] ? wallTopAt(x) : Math.max(0, 68 - (x - 690) * 0.5)];
-    const s = strand(top, bottom - top[1], sway, count, 32, phase);
-    strokes.push(s.stem);
-    s.leaves.forEach((L, li) => {
-      const st = leaf(L.base, L.len, L.angle, "life");
-      if (nl < 8 && li === 1) {
-        const id = `leaf-${nl++}`;
-        strokes.push({ ...st, id });
-        morphs[id] = [leaf(L.base, L.len, L.angle + (L.angle < 90 ? 14 : -14), "life").d];
-      } else {
-        strokes.push(st);
-      }
-    });
+  SWAYING.forEach((s, i) => {
+    life.push({ ...leaf(s.base, s.length, s.angle), id: `leaf-${i}` });
+    morphs[`leaf-${i}`] = [leaf(s.base, s.length, s.angle + 7).d];
   });
 
-  return { id: "facade", title: metaFor("facade").title, ...frameOf("facade"), strokes, glows, morphs };
+  const logoCentre = applyAffine(logo, [160, 170]);
+  const glows: Glow[] = [
+    ...DROPS_FROM_WIRE.map((b) => ({ x: b.socket[0], y: Math.round(b.socket[1] + b.h * 0.6), r: BULB_GLOW_RADIUS })),
+    { x: Math.round(logoCentre[0]), y: Math.round(logoCentre[1]), r: LOGO_GLOW_RADIUS },
+  ];
+
+  return { id: "facade", title: metaFor("facade").title, ...frameOf("facade"), strokes: [...structure, ...detail, ...life, ...lamp], glows, morphs };
 }

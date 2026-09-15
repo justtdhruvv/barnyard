@@ -62,7 +62,7 @@ export function alleySignDrawing(): Drawing {
   // ---- the marquee: a steel column with the letter panels hung on its face
   const colTop = 428;
   const colFoot = 1300;
-  strokes.push(line([362, colTop], [362, 1080]), line([432, colTop], [432, colFoot]), line([362, colTop], [432, colTop]));
+  strokes.push(line([362, colTop], [362, 846]), line([362, 992], [362, 1080]), line([432, colTop], [432, colFoot]), line([362, colTop], [432, colTop]));
   strokes.push(polyline([[362, colTop], [144, colTop], [144, 1080], [362, 1080]]));
   strokes.push(line([144, 620], [362, 620]), line([144, 822], [362, 822]));
   strokes.push(polyline([[156, 1080], [432, 1080], [432, colFoot], [156, colFoot]], "structure", true));
@@ -88,13 +88,36 @@ export function alleySignDrawing(): Drawing {
   }
 
   // ---- BOWL in bulbs, along each letter's constructed skeleton, in reading order
-  const bUpper: P[] = [[214, 572], [214, 462], [262, 462], ...arcPts([262, 490], 28, 28, -90, 90, 10), [214, 518]];
-  const bLower: P[] = [[214, 518], [266, 518], ...arcPts([266, 545], 27, 27, -90, 90, 10), [214, 572]];
+  // the letter faces: a single outline each, offset evenly either side of the skeleton the bulbs sit on
+  const side = (path: P[], h: number): P[] =>
+    path.map((p, i) => {
+      const dir = (a: P, b: P): P => {
+        const l = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1;
+        return [(b[0] - a[0]) / l, (b[1] - a[1]) / l];
+      };
+      const d1 = i > 0 ? dir(path[i - 1], p) : dir(p, path[i + 1]);
+      const d2 = i < path.length - 1 ? dir(p, path[i + 1]) : d1;
+      const m: P = [-d1[1] - d2[1], d1[0] + d2[0]];
+      const ml = Math.hypot(m[0], m[1]) || 1;
+      const cos = (m[0] * -d1[1] + m[1] * d1[0]) / ml;
+      const s = h / Math.max(0.45, cos);
+      return [p[0] + (m[0] / ml) * s, p[1] + (m[1] / ml) * s];
+    });
+  const face = (path: P[], h: number): Stroke => polyline([...side(path, h), ...side(path, -h).reverse()], "detail", true);
+  strokes.push({ d: "M192 452L258 452A34 34 0 0 1 258 520L262 520A32 32 0 0 1 262 584L192 584Z", layer: "detail" });
+  strokes.push({ d: "M236 474L256 474A12 12 0 0 1 256 498L236 498Z", layer: "detail" });
+  strokes.push({ d: "M236 534L256 534A13 13 0 0 1 256 560L236 560Z", layer: "detail" });
+  strokes.push(ellipse([268, 708], 73, 68, "detail"), ellipse([268, 708], 31, 28, "detail"));
+  strokes.push(face([[193, 853], [240, 980], [281, 892], [322, 980], [369, 853]], 17));
+  strokes.push(face([[262, 1095], [262, 1250], [360, 1250]], 22));
+
+  const bUpper: P[] = [[214, 574], [214, 463], [257, 463], ...arcPts([257, 486], 23, 23, -90, 90, 10), [236, 509]];
+  const bLower: P[] = [...arcPts([260, 549], 24, 24, -55, 90, 10), [248, 573]];
   const letters: { pts: P[]; glow: Glow }[] = [
-    { pts: [...along(bUpper, 10), ...along(bLower, 7).slice(1, -1)], glow: { x: 252, y: 515, r: 95 } },
-    { pts: along(arcPts([268, 708], 52, 48, -90, 250, 40), 14), glow: { x: 268, y: 708, r: 100 } },
-    { pts: along([[200, 872], [240, 980], [281, 892], [322, 980], [362, 872]], 15), glow: { x: 281, y: 926, r: 105 } },
-    { pts: along([[262, 1106], [262, 1250], [350, 1250]], 12), glow: { x: 290, y: 1180, r: 95 } },
+    { pts: [...along(bUpper, 12), ...along(bLower, 5)], glow: { x: 250, y: 518, r: 95 } },
+    { pts: along(arcPts([268, 708], 52, 48, -90, 242, 40), 13), glow: { x: 268, y: 708, r: 100 } },
+    { pts: along([[200, 872], [240, 980], [281, 892], [322, 980], [362, 872]], 19), glow: { x: 281, y: 926, r: 105 } },
+    { pts: along([[262, 1117], [262, 1250], [338, 1250]], 10), glow: { x: 290, y: 1180, r: 95 } },
   ];
   let nb = 0;
   for (const L of letters) {
@@ -109,8 +132,8 @@ export function alleySignDrawing(): Drawing {
   const left = [...prof].reverse().slice(1).map(([w, y]) => [ax - w, y] as P);
   strokes.push(curve([...right, ...left], "structure"));
   strokes.push(line([ax - 95, 1270], [ax + 95, 1270]));
-  strokes.push(polyline([[652, 742], [740, 756], [738, 776], [650, 762]], "lamp", true));
-  strokes.push(polyline([[650, 790], [742, 804], [740, 822], [648, 808]], "lamp", true));
+  strokes.push(polyline([[654, 742], [736, 755], [734, 775], [652, 762]], "lamp", true));
+  strokes.push(polyline([[652, 790], [736, 803], [736, 821], [650, 808]], "lamp", true));
   glows.push({ x: 696, y: 782, r: 70 });
 
   // ---- OPEN, plain neon letters on a slightly falling line
@@ -137,6 +160,7 @@ export function alleySignDrawing(): Drawing {
   // ---- a tree at the right edge
   strokes.push(...vine([[1072, 1900], [1052, 1760], [1030, 1620], [1004, 1500], [990, 1400]], 7, 11, 34));
   strokes.push(...vine([[1040, 1680], [990, 1620], [950, 1580]], 3, 23, 30));
+  strokes.push(...vine([[1020, 1560], [1050, 1470], [1080, 1420]], 3, 37, 30));
 
   return { id: "alley-sign", title: metaFor("alley-sign").title, ...frameOf("alley-sign"), strokes, glows };
 }

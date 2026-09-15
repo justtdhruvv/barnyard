@@ -11,7 +11,7 @@ export const NAV = [
   { href: "/spaces", label: "The rooms" },
   { href: "/#written", label: "Written about" },
   { href: "/#ways", label: "Four ways in" },
-  { href: "/#visit", label: "Visit" },
+  { href: "/visit", label: "Visit" },
 ] as const;
 
 export function SiteHeader() {

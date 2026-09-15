@@ -76,6 +76,9 @@ html[data-motion="on"] .drawing[data-pending] .ln { visibility: hidden; animatio
 .site-menu a { color: var(--ink); text-decoration: none; }
 .site-menu a[aria-current="page"] { color: var(--pen); }
 
+.pen-line { position: fixed; left: 0; right: 0; top: 64px; z-index: 45; height: 1.5px; background: var(--pen); transform-origin: left center; transform: scaleX(0); animation: pen-line 900ms var(--ease-pen) forwards; pointer-events: none; }
+@keyframes pen-line { 0% { transform: scaleX(0); opacity: 1; } 55% { transform: scaleX(1); opacity: 1; } 100% { transform: scaleX(1); opacity: 0; } }
+
 .site-footer { padding-block: 48px 64px; border-top: 1px solid var(--hair); display: grid; gap: 18px; }
 .site-footer nav ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 22px; }
 

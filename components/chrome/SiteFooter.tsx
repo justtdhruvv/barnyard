@@ -11,7 +11,7 @@ export function SiteFooter() {
         <ul>
           <li><Link className="pen-link" href="/spaces">The rooms</Link></li>
           <li><a className="pen-link" href={cafe.meta.instagram} rel="noopener">Instagram</a></li>
-          <li><Link className="pen-link" href="/#visit">Visit</Link></li>
+          <li><Link className="pen-link" href="/visit">Visit</Link></li>
         </ul>
       </nav>
     </footer>

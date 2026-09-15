@@ -162,6 +162,8 @@ export function House() {
       tl.to(sunMarkParts, { drawSVG: "100%", duration: 0.28, stagger: 0.02 }, 0.45);
       tl.to(markParts, { drawSVG: "100%", duration: 0.4, stagger: 0.018 }, 0.55);
       // 2. the arch widens to the house, the dividers become the rooms (1.2 to 1.95 s)
+      // the drawn lines keep their full length while they grow
+      tl.call(() => { gsap.set([archEl, ...lineEls.slice(0, 3)], { clearProps: "strokeDasharray,strokeDashoffset" }); }, [], 1.18);
       const arch = { ...m };
       const lines = startLines.map((l) => [...l]);
       const proxy = { t: 0 };

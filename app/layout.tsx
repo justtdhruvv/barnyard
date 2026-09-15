@@ -4,6 +4,7 @@ import { LightProvider } from "@/components/light/LightProvider";
 import { LightScript } from "@/components/light/LightScript";
 import { SiteHeader } from "@/components/chrome/SiteHeader";
 import { SiteFooter } from "@/components/chrome/SiteFooter";
+import { PenLine } from "@/components/nav/PenLine";
 import { cafe } from "@/lib/cafe";
 import "./globals.css";
 
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a className="skip" href="#main">Skip to content</a>
         <LightProvider>
           <SiteHeader />
+          <PenLine />
           <main id="main">{children}</main>
           <SiteFooter />
         </LightProvider>
