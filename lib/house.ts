@@ -47,9 +47,14 @@ export function archPath(x0: number, x1: number, spring: number, base: number): 
   return `M${f(x0)} ${f(base)}L${f(x0)} ${f(spring)}A${f(r)} ${f(r)} 0 0 1 ${f(x1)} ${f(spring)}L${f(x1)} ${f(base)}Z`;
 }
 
+/** The radius of the sun's track, concentric with the arch head. */
+export function sunTrack(g: Pick<HouseGeometry, "r">): number {
+  return g.r * 0.7;
+}
+
 /** The sun on its track inside the arch head: 11 AM at the left springing, 3 AM at the right. */
 export function sunOnArch(clockT: number, g: HouseGeometry): { cx: number; cy: number; track: number } {
-  const track = g.r * 0.7;
+  const track = sunTrack(g);
   const a = Math.PI + Math.PI * Math.min(1, Math.max(0, clockT));
   return { cx: g.cx + Math.cos(a) * track, cy: g.spring + Math.sin(a) * track, track };
 }

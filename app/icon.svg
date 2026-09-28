@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 40 240 240" fill="none" stroke="#25211e" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+<title>The Barnyard Co.</title>
+<style>@media (prefers-color-scheme: dark) { svg { stroke: #e9e8e4; } }</style>
+<path d="M 55 265 L 55 160 A 105 105 0 0 1 265 160 L 265 265 Z"/>
+<path d="M 160 55 L 160 265"/>
+<path d="M 55 160 L 160 160"/>
+<path d="M 160 172 L 265 172"/>
+<circle cx="108" cy="108" r="20"/>
+</svg>

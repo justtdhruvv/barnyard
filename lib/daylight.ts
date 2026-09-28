@@ -44,14 +44,15 @@ export function daylightFor(hourRaw: number): number {
   if (h < 11) return seg(h, 6.5, 11, 0.5, 1);
   if (h < 15) return seg(h, 11, 15, 1, 0.9);
   if (h < 18.75) return seg(h, 15, 18.75, 0.9, 0.5);
-  if (h < 19.5) return seg(h, 18.75, 19.5, 0.5, 0.25);
-  if (h < 25) return seg(h, 19.5, 25, 0.25, 0.05);
+  // dusk crosses REGIME_FLIP at exactly 7 PM, so the house is dark from 7 PM on
+  if (h < 19.25) return seg(h, 18.75, 19.25, 0.5, 0.25);
+  if (h < 25) return seg(h, 19.25, 25, 0.25, 0.05);
   if (h < 27) return seg(h, 25, 27, 0.05, 0);
   return 0;
 }
 
 export function regimeFor(daylight: number): Regime {
-  return daylight >= REGIME_FLIP ? "day" : "night";
+  return daylight > REGIME_FLIP ? "day" : "night";
 }
 
 export function clockTFor(hourRaw: number): number {
@@ -96,9 +97,9 @@ export function houseNowHour(date = new Date()): number {
   }
 }
 
-/** "?at=HH:MM" pins the house to an hour for a walkthrough. Never stored. */
+/** "?at=HH:MM" pins the house to an hour for a walkthrough (the colon may arrive as %3A). Never stored. */
 export function parseAt(search: string): number | null {
-  const m = /[?&]at=(\d{1,2})(?::(\d{2}))?/.exec(search);
+  const m = /[?&]at=(\d{1,2})(?:(?::|%3[aA])(\d{2}))?/.exec(search);
   if (!m) return null;
   const h = Number(m[1]);
   const mm = Number(m[2] ?? 0);

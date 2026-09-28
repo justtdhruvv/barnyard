@@ -11,12 +11,11 @@ const PANE_PHOTO = (id: string) => ((photos as Record<string, unknown>)[id] && m
 import { DRAWINGS, drawingFor } from "@/drawings";
 import { markDrawing } from "@/drawings/mark";
 import type { Drawing } from "@/lib/draw/types";
-import { archPath, houseGeometry, sunOnArch, VIGNETTES, type HouseGeometry } from "@/lib/house";
+import { archPath, houseGeometry, sunTrack, VIGNETTES, type HouseGeometry } from "@/lib/house";
 import { loadGsap, motionAllowed } from "@/lib/motion/gsap";
-import { nowHour, parseAt, stateFor } from "@/lib/daylight";
+import { MOON_FROM, MOON_TO, RAYS_FROM, RAYS_TO } from "@/lib/sky";
 import { useRouter } from "next/navigation";
 import { flyToRoom } from "./flight";
-import { useLight } from "@/components/light/LightProvider";
 import { MARK_SUN, MARK_RAYS } from "./markParts";
 import "./house.css";
 
@@ -32,25 +31,35 @@ function vignetteOf(slug: keyof typeof VIGNETTES, id: string): { d: Drawing | nu
   return { d, vb: v ? v.join(" ") : `${d.x ?? 0} ${d.y ?? 0} ${d.width} ${d.height}` };
 }
 
-function Variant({ g, variant, clockT, night, onPane, photosOn }: { g: HouseGeometry; variant: "m" | "d"; clockT: number; night: boolean; onPane: (e: React.MouseEvent<Element>, slug: string) => void; photosOn: boolean }) {
+function Variant({ g, variant, onPane, photosOn }: { g: HouseGeometry; variant: "m" | "d"; onPane: (e: React.MouseEvent<Element>, slug: string) => void; photosOn: boolean }) {
   const mark = markDrawing();
-  const sun = sunOnArch(clockT, g);
+  const track = sunTrack(g);
   const fs = variant === "m" ? 12.5 : 17;
   const sunR = variant === "m" ? 11 : 22;
+  // the sun's place on the track and its dusk thresholds go to CSS on the svg, which reads the clock and daylight the pre-paint script set
+  const sunStyle = {
+    "--sun-cx": `${g.cx}px`, "--sun-cy": `${g.spring}px`, "--sun-track": `${track}px`, "--sun-r": `${sunR}px`,
+    "--moon-from": MOON_FROM, "--moon-to": MOON_TO, "--rays-from": RAYS_FROM, "--rays-to": RAYS_TO,
+  } as React.CSSProperties;
   const markStrokes = mark.strokes.filter((s) => !s.id?.startsWith("mark-arch") && !s.id?.startsWith("mark-divider") && s.id !== "mark-sun");
   return (
-    <svg className={`house house-${variant}`} viewBox={`0 0 ${g.width} ${g.height}`} data-variant={variant} role="group" aria-label="The house, drawn from the café's mark: six rooms under one arch">
+    <svg className={`house house-${variant}`} viewBox={`0 0 ${g.width} ${g.height}`} data-variant={variant} style={sunStyle} role="group" aria-label="The house, drawn from the café's mark: six rooms under one arch">
       <defs>
         <radialGradient id={`sun-glow-${variant}`}>
           <stop offset="0" stopColor="#e7a64f" stopOpacity="0.75" />
           <stop offset="1" stopColor="#e7a64f" stopOpacity="0" />
         </radialGradient>
+        <radialGradient id={`moon-glow-${variant}`} className="moon-glow-gradient">
+          <stop offset="0" stopOpacity="0.5" />
+          <stop offset="0.55" stopOpacity="0.12" />
+          <stop offset="1" stopOpacity="0" />
+        </radialGradient>
       </defs>
       {/* the sun's track through the opening hours, in the arch head */}
       <g className="house-track" aria-hidden="true">
-        <path className="hair" d={`M${g.cx - sun.track} ${g.spring}A${sun.track} ${sun.track} 0 0 1 ${g.cx + sun.track} ${g.spring}`} />
-        <text x={g.cx - sun.track} y={g.spring - 8} textAnchor="middle" fontSize={fs * 0.82}>11 AM</text>
-        <text x={g.cx + sun.track} y={g.spring - 8} textAnchor="middle" fontSize={fs * 0.82}>3 AM</text>
+        <path className="hair" d={`M${g.cx - track} ${g.spring}A${track} ${track} 0 0 1 ${g.cx + track} ${g.spring}`} />
+        <text x={g.cx - track} y={g.spring - 8} textAnchor="middle" fontSize={fs * 0.82}>11 AM</text>
+        <text x={g.cx + track} y={g.spring - 8} textAnchor="middle" fontSize={fs * 0.82}>3 AM</text>
       </g>
 
       <g className="house-panes">
@@ -90,13 +99,24 @@ function Variant({ g, variant, clockT, night, onPane, photosOn }: { g: HouseGeom
         {g.lines.map((l, i) => <path key={i} className={`house-line ln line-${i}`} d={`M${l[0]} ${l[1]}L${l[2]} ${l[3]}`} />)}
       </g>
 
-      <g className={`house-sun${night ? " is-lamp" : ""}`} transform={`translate(${sun.cx.toFixed(1)} ${sun.cy.toFixed(1)})`} aria-hidden="true">
-        <circle className="sun-glow" r={sunR * 4} fill={`url(#sun-glow-${variant})`} />
-        <circle className="sun-disc ln" r={sunR} />
-        {Array.from({ length: 8 }, (_, i) => {
-          const a = (i * Math.PI) / 4;
-          return <path key={i} className="sun-ray ln" d={`M${(Math.cos(a) * sunR * 1.35).toFixed(1)} ${(Math.sin(a) * sunR * 1.35).toFixed(1)}L${(Math.cos(a) * sunR * 1.85).toFixed(1)} ${(Math.sin(a) * sunR * 1.85).toFixed(1)}`} />;
-        })}
+      {/* the sun on its track by the clock; through dusk its rays retract and a shadow slides across the disc until it is the moon */}
+      <g className="house-sun" aria-hidden="true">
+        <g className="sun-body">
+          <circle className="sun-glow sun-glow-warm" r={sunR * 4} fill={`url(#sun-glow-${variant})`} />
+          <circle className="sun-glow sun-glow-cool" r={sunR * 3.4} fill={`url(#moon-glow-${variant})`} />
+          <mask id={`moon-mask-${variant}`} maskUnits="userSpaceOnUse" x={-sunR * 2.5} y={-sunR * 2.5} width={sunR * 5} height={sunR * 5}>
+            <rect x={-sunR * 2.5} y={-sunR * 2.5} width={sunR * 5} height={sunR * 5} fill="#fff" />
+            <circle className="moon-shadow" r={sunR} fill="#000" />
+          </mask>
+          <clipPath id={`disc-clip-${variant}`}><circle r={sunR} /></clipPath>
+          <circle className="sun-disc ln" r={sunR} mask={`url(#moon-mask-${variant})`} />
+          <g clipPath={`url(#disc-clip-${variant})`}><circle className="moon-shadow moon-term ln" r={sunR} /></g>
+          {Array.from({ length: 8 }, (_, i) => (
+            <g key={i} transform={`rotate(${i * 45}) translate(${(sunR * 1.35).toFixed(1)} 0)`}>
+              <path className="sun-ray ln" d={`M0 0L${(sunR * 0.5).toFixed(1)} 0`} />
+            </g>
+          ))}
+        </g>
       </g>
 
       {/* the mark, used only by the arrival: it draws itself, then its arch widens into the house */}
@@ -110,9 +130,6 @@ function Variant({ g, variant, clockT, night, onPane, photosOn }: { g: HouseGeom
 }
 
 export function House() {
-  const { state } = useLight();
-  const clockT = state?.clockT ?? 0.2;
-  const night = state?.regime === "night";
   const root = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const flying = useRef(false);
@@ -202,7 +219,6 @@ export function House() {
       const archEl = svg.querySelector<SVGPathElement>(".house-arch")!;
       const lineEls = Array.from(svg.querySelectorAll<SVGPathElement>(".house-line"));
       const sunG = svg.querySelector<SVGGElement>(".house-sun")!;
-      const sunParts = Array.from(sunG.querySelectorAll<SVGPathElement | SVGCircleElement>(".ln"));
       const panes = Array.from(svg.querySelectorAll<SVGAElement>(".pane"));
       const track = svg.querySelector<SVGGElement>(".house-track")!;
 
@@ -218,9 +234,6 @@ export function House() {
       const [h0x, h0y] = M(55, 160), [h1x] = M(160, 160);
       const [r0x, r0y] = M(160, 172), [r1x] = M(265, 172);
       const startLines: [number, number, number, number][] = [[v0x, v0y, v1x, v1y], [h0x, h0y, h1x, h0y], [r0x, r0y, r1x, r0y]];
-      const sunStart = M(108, 108);
-      const sunEnd = sunOnArch(stateFor(parseAt(location.search) ?? nowHour()).clockT, g);
-      const sunScale = (20 * s) / (desktop ? 22 : 11);
 
       const markParts = Array.from(markG.querySelectorAll<SVGPathElement>(".mark-part"));
       const sunMarkParts = Array.from(markG.querySelectorAll<SVGPathElement>(".mark-sun-part"));
@@ -268,13 +281,11 @@ export function House() {
       tl.to(markParts, { opacity: 0, duration: 0.3, ease: "power1.out" }, 1.2);
       // the mark's sun goes with the rest of the mark; the house's sun appears only once it is in the arch head
       tl.fromTo(sunMarkParts, { opacity: 1 }, { opacity: 0, duration: 0.3 }, 1.2);
-      void sunStart; void sunScale; void sunEnd;
       tl.fromTo(sunG, { opacity: 0 }, { opacity: 1, duration: 0.4 }, 1.8);
       tl.to(lineEls.slice(3), { opacity: 1, duration: 0.3 }, 1.7);
       tl.to(track, { opacity: 1, duration: 0.4 }, 1.8);
       // 3. the rooms appear, one pane after another (1.75 to 2.35 s)
       tl.to(panes, { opacity: 1, duration: 0.45, stagger: 0.03, ease: "power1.out" }, 1.75);
-      void sunParts;
 
       skip = () => { tl.progress(1); };
       events.forEach((ev) => window.addEventListener(ev, onSkip, { passive: true, once: true }));
@@ -285,14 +296,13 @@ export function House() {
       el.removeAttribute("data-arriving");
       el.setAttribute("data-done", "");
     };
-    // the arrival runs once per hard load; the clock only places the sun
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // the arrival runs once per hard load; CSS places the sun from the clock
   }, []);
 
   return (
     <div ref={root} className="house-wrap" data-view={view}>
-      <Variant g={MOBILE} variant="m" clockT={clockT} night={night} onPane={onPane} photosOn={photosOn} />
-      <Variant g={DESKTOP} variant="d" clockT={clockT} night={night} onPane={onPane} photosOn={photosOn} />
+      <Variant g={MOBILE} variant="m" onPane={onPane} photosOn={photosOn} />
+      <Variant g={DESKTOP} variant="d" onPane={onPane} photosOn={photosOn} />
       <div className="view-bar">
         <div className="view-toggle" role="radiogroup" aria-label="See the rooms as" onKeyDown={onRadioKey}>
           {VIEWS.map((x, i) => (
